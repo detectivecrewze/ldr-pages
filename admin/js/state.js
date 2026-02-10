@@ -306,15 +306,18 @@ const state = {
     },
 
     getPages(enabledOnly = true) {
-        if (!this.config.pageConfig || !this.config.pageConfig.pages) return [];
-        const pages = Object.values(this.config.pageConfig.pages)
-            .sort((a, b) => a.order - b.order);
+        let pagesObj = (this.config.pageConfig && this.config.pageConfig.pages) ? this.config.pageConfig.pages : this.config.pages;
+        if (!pagesObj) return [];
+
+        const pages = Object.values(pagesObj)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
         return enabledOnly ? pages.filter(p => p.enabled) : pages;
     },
 
     togglePage(pageId, enabled) {
-        if (this.config.pageConfig && this.config.pageConfig.pages[pageId]) {
-            this.config.pageConfig.pages[pageId].enabled = enabled;
+        let pagesObj = (this.config.pageConfig && this.config.pageConfig.pages) ? this.config.pageConfig.pages : this.config.pages;
+        if (pagesObj && pagesObj[pageId]) {
+            pagesObj[pageId].enabled = enabled;
             this.hasChanges = true;
             this.saveToStorage();
             this.broadcastUpdate();
@@ -322,10 +325,11 @@ const state = {
     },
 
     reorderPages(pageOrder) {
-        if (this.config.pageConfig && this.config.pageConfig.pages) {
+        let pagesObj = (this.config.pageConfig && this.config.pageConfig.pages) ? this.config.pageConfig.pages : this.config.pages;
+        if (pagesObj) {
             pageOrder.forEach((id, index) => {
-                if (this.config.pageConfig.pages[id]) {
-                    this.config.pageConfig.pages[id].order = index + 1;
+                if (pagesObj[id]) {
+                    pagesObj[id].order = index + 1;
                 }
             });
             this.hasChanges = true;
@@ -516,6 +520,12 @@ const state = {
 
         // Also update main window CONFIG
         window.CONFIG = this.config;
+
+        // If in Admin, trigger app refresh
+        if (window.app && typeof window.app.recalcWizardSteps === 'function') {
+            window.app.recalcWizardSteps();
+            window.app.renderSidebar();
+        }
     },
 
     saveToFile() {

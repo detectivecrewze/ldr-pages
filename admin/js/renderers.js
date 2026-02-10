@@ -1,29 +1,6 @@
 // Renderers for dynamic content
 
 const renderers = {
-    // Render sidebar navigation
-    renderSidebar() {
-        const nav = document.getElementById('sidebarNav');
-        if (!nav) return;
-
-        nav.innerHTML = WIZARD_STEPS.map((step, index) => {
-            const isActive = index === state.currentStep;
-            const isCompleted = index < state.currentStep;
-
-            return `
-                <div class="sidebar-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" 
-                     onclick="app.goToStep(${index})">
-                    <div class="sidebar-icon">
-                        <span class="material-symbols-outlined">${step.icon}</span>
-                    </div>
-                    <div class="sidebar-text">
-                        <div class="sidebar-title">${step.title}</div>
-                        <div class="sidebar-desc">${step.description}</div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    },
 
     // Generic collapsible renderer
     renderCollapsible(index, title, description, bodyContent, onRemove = null, isOpen = false) {

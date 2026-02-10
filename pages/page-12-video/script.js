@@ -277,14 +277,17 @@ function setupEventListeners() {
 
         elements.totalTime.textContent = durationStr;
 
-        // Synchronize duration back to state and playlist if it changed significantly
+        // Always use the actual metadata duration for display
+        const currentMins = Math.floor(elements.videoPlayer.duration / 60);
+        const currentSecs = Math.floor(elements.videoPlayer.duration % 60);
+        const actualDuration = `${currentMins}:${currentSecs.toString().padStart(2, '0')}`;
+
         if (state.currentIndex !== -1) {
-            const currentVideo = state.videos[state.currentIndex];
-            if (currentVideo.duration === '0:01' || currentVideo.duration === '0:00' || !currentVideo.duration) {
-                console.log('[Video] Updating duration from metadata:', durationStr);
-                currentVideo.duration = durationStr;
-                renderPlaylist(); // Refresh the list UI
-            }
+            console.log('[Video] Updating duration from metadata:', actualDuration);
+            state.videos[state.currentIndex].duration = actualDuration;
+            // Force update the UI
+            renderPlaylist();
+            elements.totalTime.textContent = actualDuration;
         }
 
         // Update video dimensions if needed

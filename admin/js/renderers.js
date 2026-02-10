@@ -1040,11 +1040,6 @@ const renderers = {
                                 <input type="text" class="array-item-input w-full !bg-white/50" data-field="title" 
                                     value="${video.title || ''}" placeholder="e.g. Our First Date">
                             </div>
-                            <div class="form-group">
-                                <label class="item-label text-[9px] font-bold text-gray-400 uppercase tracking-tighter">Duration</label>
-                                <input type="text" class="array-item-input w-full !bg-white/50" data-field="duration" 
-                                    value="${video.duration || '0:00'}" placeholder="e.g. 2:15">
-                            </div>
 
                         <div class="form-group">
                             <label class="item-label text-[9px] font-bold text-gray-400 uppercase tracking-tighter">Video Source</label>

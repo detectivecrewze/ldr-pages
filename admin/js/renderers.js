@@ -1166,4 +1166,125 @@ const renderers = {
     addMemory() {
         app.addArrayItem('sharedWorld', 'photos', { url: '', caption: '', date: new Date().toISOString().split('T')[0] });
     },
+    renderFinishStep() {
+        const config = state.getConfig();
+        const recipientName = config.metadata?.customerName || '';
+
+        return `
+            <div class="step-header">
+                <h2>Finish & Share</h2>
+                <p>Review your work and export the final configuration.</p>
+            </div>
+
+            <!-- Recipient Name Card -->
+            <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-900 text-lg mb-1">Who is this for?</h3>
+                        <p class="text-sm text-gray-500">Enter the recipient's name to personalize the website URL</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Recipient Name</label>
+                        <input type="text" id="finish-recipient-name" 
+                            class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                            placeholder="e.g., Septian"
+                            value="${recipientName}"
+                            oninput="state.updateField('metadata', 'customerName', this.value)">
+                    </div>
+                    
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3">
+                        <div class="text-amber-600 mt-0.5">
+                            <span class="material-symbols-outlined text-xl">info</span>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                <span class="font-semibold">This name will be used for:</span>
+                            </p>
+                            <ul class="text-sm text-gray-600 mt-2 space-y-1 ml-4 list-disc">
+                                <li>The website URL parameter (e.g., <span class="font-mono text-xs bg-white px-1.5 py-0.5 rounded border border-amber-200">?to=Name</span>)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-emerald-600 to-green-700 rounded-3xl p-8 text-white shadow-xl mb-8 relative overflow-hidden">
+                <div class="relative z-10 text-center">
+                    <div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <span class="material-symbols-outlined text-4xl">celebration</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">You're All Set!</h3>
+                    <p class="text-emerald-100 mb-8 max-w-sm mx-auto">Your personalized experience is ready. Preview your creation below before publishing.</p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+                        <button onclick="app.showPreview()" class="w-full sm:w-auto bg-emerald-800/30 backdrop-blur-md text-white border border-white/20 px-6 py-4 rounded-2xl font-bold text-sm hover:bg-white/20 transition-all flex items-center justify-center gap-3">
+                            <span class="material-symbols-outlined">smartphone</span>
+                            Mobile Preview
+                        </button>
+                    </div>
+                    <button onclick="app.publishOnline()" class="w-full sm:w-auto bg-white text-emerald-700 px-12 py-5 rounded-2xl font-black text-xl hover:bg-emerald-50 transition-all shadow-xl shadow-emerald-900/20 active:scale-95 flex items-center justify-center gap-3 mx-auto">
+                        <span class="material-symbols-outlined text-2xl">rocket_launch</span>
+                        Generate & Publish
+                    </button>
+                </div>
+                <div class="absolute -bottom-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+                <div class="absolute -top-12 -left-12 w-32 h-32 bg-emerald-400/20 rounded-full blur-2xl"></div>
+            </div>
+
+            <!-- Publish Result (Hidden by default) -->
+            <div id="publishResult" class="hidden animate-fade-in-up">
+                <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center">
+                            <span class="material-symbols-outlined">link</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900">Your Site is Live!</h4>
+                            <p class="text-sm text-gray-500">Copy the link below or scan the QR code to share.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-8 items-start">
+                        <!-- Link & Actions -->
+                        <div class="flex-1 w-full space-y-4">
+                            <div class="relative">
+                                <input type="text" id="shareableLink" readonly 
+                                    class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 text-sm font-mono text-emerald-700 pr-32 focus:outline-none"
+                                    value="Generating link...">
+                                <button onclick="app.copyLink()" class="absolute right-2 top-2 bottom-2 bg-emerald-600 text-white px-4 rounded-xl text-xs font-bold hover:bg-emerald-700 transition-all flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">content_copy</span>
+                                    Copy
+                                </button>
+                            </div>
+                            <div class="flex gap-3">
+                                <a id="viewLiveBtn" href="#" target="_blank" class="flex-1 bg-slate-900 text-white py-3 rounded-2xl text-center text-sm font-bold hover:bg-black transition-all flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                                    Visit Site
+                                </a>
+                                <button onclick="app.downloadQR()" class="flex-1 border-2 border-slate-100 text-slate-600 py-3 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">download</span>
+                                    Save QR
+                                </button>
+                                <button onclick="app.downloadDataJS()" class="flex-1 border-2 border-slate-100 text-slate-600 py-3 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">javascript</span>
+                                    Download data.js
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- QR Code -->
+                        <div class="w-full md:w-32 flex flex-col items-center gap-2">
+                            <div id="qrcode" class="p-2 bg-white border-2 border-slate-100 rounded-2xl shadow-sm overflow-hidden shrink-0"></div>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Scan Me</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
 };

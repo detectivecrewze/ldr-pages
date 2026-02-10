@@ -67,6 +67,15 @@ const app = {
             }
         });
 
+        // Always include Finish
+        this.wizardSteps.push({
+            id: 'finish',
+            title: 'Finish & Share',
+            description: 'Export & Share',
+            icon: 'rocket_launch',
+            render: () => renderers.renderFinishStep()
+        });
+
         // Validate current step bounds
         if (state.currentStep >= this.wizardSteps.length) {
             state.currentStep = 0;
@@ -628,6 +637,124 @@ const app = {
         } catch (error) {
             console.error('[Upload] Error:', error);
             utils.showNotification('Upload failed', 'error');
+        }
+    },
+
+    async publishOnline() {
+        const btn = document.querySelector('button[onclick="app.publishOnline()"]');
+        let originalHTML = '';
+        if (btn) {
+            originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Syncing...';
+        }
+
+        try {
+            const config = state.getConfig();
+            // Use recipient name for ID if available
+            const recipientName = (config.metadata?.customerName || '').trim();
+            let id;
+            if (recipientName) {
+                // Convert name to URL-friendly format
+                id = recipientName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            } else {
+                // Generate a unique ID based on timestamp + random string
+                const timestamp = Date.now().toString(36);
+                const randomStr = Math.random().toString(36).substring(2, 8);
+                id = `${timestamp}-${randomStr}`;
+            }
+
+            // Adjust this URL to your GitHub Pages URL
+            const siteUrl = `https://detectivecrewze.github.io/ldr-pages/?to=${encodeURIComponent(id)}`;
+
+            const response = await fetch('https://valentine-upload.aldoramadhan16.workers.dev/save-config?id=' + encodeURIComponent(id), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            });
+
+            if (response.ok) {
+                utils.showNotification('✨ Site is now live!', 'success');
+
+                // Show Result UI
+                const resultDiv = document.getElementById('publishResult');
+                const shareInput = document.getElementById('shareableLink');
+                const viewBtn = document.getElementById('viewLiveBtn');
+                const qrContainer = document.getElementById('qrcode');
+
+                if (resultDiv) resultDiv.classList.remove('hidden');
+                if (shareInput) shareInput.value = siteUrl;
+                if (viewBtn) viewBtn.href = siteUrl;
+
+                // Generate QR
+                if (qrContainer && typeof QRCode !== 'undefined') {
+                    qrContainer.innerHTML = '';
+                    new QRCode(qrContainer, {
+                        text: siteUrl,
+                        width: 120,
+                        height: 120,
+                        colorDark: "#059669", // Emerald 600
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                }
+
+                if (btn) {
+                    btn.innerHTML = '<span class="material-symbols-outlined">verified</span> Ready to Share';
+                    btn.classList.add('!bg-emerald-100', '!text-emerald-700', 'border-emerald-200');
+                }
+            } else {
+                throw new Error('Upload failed');
+            }
+        } catch (e) {
+            console.error(e);
+            utils.showNotification('Failed to publish. Check your connection.', 'error');
+            if (btn) {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+    },
+
+    copyLink() {
+        const input = document.getElementById('shareableLink');
+        if (input) {
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value);
+            utils.showNotification('Link copied to clipboard!', 'success');
+        }
+    },
+
+    downloadQR() {
+        const qrContainer = document.getElementById('qrcode');
+        if (!qrContainer) return;
+        const img = qrContainer.querySelector('img');
+        if (img) {
+            const a = document.createElement('a');
+            a.href = img.src;
+            a.download = 'ldr-qr.png';
+            a.click();
+        }
+    },
+
+    downloadDataJS() {
+        try {
+            const config = state.getConfig();
+            const fileContent = `const CONFIG = ${JSON.stringify(config, null, 4)};`;
+            const blob = new Blob([fileContent], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            utils.showNotification('data.js downloaded!', 'success');
+        } catch (e) {
+            console.error('Download failed:', e);
+            utils.showNotification('Failed to download data.js', 'error');
         }
     }
 };

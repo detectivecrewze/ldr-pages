@@ -645,14 +645,14 @@
                 }
             ],
 
-            init() {
+            async init() {
                 // Keep the original apps list for filtering later
                 if (!this._allApps) {
                     this._allApps = JSON.parse(JSON.stringify(this.apps));
                 }
 
                 // Initial config load
-                this.loadConfig();
+                await this.loadConfig();
 
                 // Load unlocked index from localStorage
                 const savedIndex = localStorage.getItem('ldr_unlocked_index');
@@ -669,11 +669,32 @@
                 this.startClock();
             },
 
-            loadConfig() {
+            async loadConfig() {
                 // Baseline: Start with what's in data.js
                 // Compatibility fix: Check both window.CONFIG and global CONFIG
                 const baselineConfig = typeof window.CONFIG !== 'undefined' ? window.CONFIG :
                     (typeof CONFIG !== 'undefined' ? CONFIG : {});
+
+                // Check for URL parameter ?to=ID
+                const urlParams = new URLSearchParams(window.location.search);
+                const cloudId = urlParams.get('to');
+
+                if (cloudId) {
+                    try {
+                        console.log('[Desktop] Loading config from cloud:', cloudId);
+                        const response = await fetch(`https://valentine-upload.aldoramadhan16.workers.dev/get-config?id=${encodeURIComponent(cloudId)}`);
+                        if (response.ok) {
+                            const cloudConfig = await response.json();
+                            window.CONFIG = Object.assign(JSON.parse(JSON.stringify(baselineConfig)), cloudConfig);
+                            console.log('[Desktop] Cloud config loaded successfully');
+                            return; // Skip localStorage if cloud config is loaded
+                        } else {
+                            console.error('[Desktop] Failed to load cloud config, falling back to local');
+                        }
+                    } catch (e) {
+                        console.error('[Desktop] Error loading cloud config:', e);
+                    }
+                }
 
                 // Overlay: Try to load user edits from localStorage
                 const savedJson = localStorage.getItem('ldr_config');
@@ -1158,10 +1179,10 @@
         };
 
         // Initialize desktop
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             console.log('Desktop initializing...');
             try {
-                desktop.init();
+                await desktop.init();
                 console.log('Desktop initialized successfully');
 
                 // Auto-open Login.exe on startup

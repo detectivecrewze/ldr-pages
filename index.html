@@ -671,7 +671,9 @@
 
             loadConfig() {
                 // Baseline: Start with what's in data.js
-                const baselineConfig = typeof window.CONFIG !== 'undefined' ? window.CONFIG : {};
+                // Compatibility fix: Check both window.CONFIG and global CONFIG
+                const baselineConfig = typeof window.CONFIG !== 'undefined' ? window.CONFIG :
+                    (typeof CONFIG !== 'undefined' ? CONFIG : {});
 
                 // Overlay: Try to load user edits from localStorage
                 const savedJson = localStorage.getItem('ldr_config');

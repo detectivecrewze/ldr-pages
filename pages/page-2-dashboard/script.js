@@ -95,7 +95,10 @@ function init() {
 
 // Load data from CONFIG
 function loadData() {
-    const config = window.CONFIG;
+    // Check window.CONFIG, then potentially global CONFIG from data.js
+    const config = (typeof window.CONFIG !== 'undefined' ? window.CONFIG :
+        (typeof CONFIG !== 'undefined' ? CONFIG : null));
+
     if (config) {
         // Dashboard config
         if (config.dashboard) {
@@ -126,7 +129,7 @@ function loadData() {
         if (config.login && config.login.relationshipStartDate) {
             state.relationshipStartDate = new Date(config.login.relationshipStartDate);
         }
-        
+
         // Names from login config
         if (config.login) {
             if (config.login.youLabel) {

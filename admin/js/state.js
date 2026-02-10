@@ -13,9 +13,9 @@ const state = {
         const forceReload = urlParams.get('reload') === '1';
 
         // Source of truth baseline
-        const baselineConfig = typeof window.CONFIG !== 'undefined' ?
-            window.CONFIG :
-            (typeof DEFAULT_CONFIG !== 'undefined' ? DEFAULT_CONFIG : this.createDefaultConfig());
+        const baselineConfig = typeof window.CONFIG !== 'undefined' ? window.CONFIG :
+            (typeof CONFIG !== 'undefined' ? CONFIG :
+                (typeof DEFAULT_CONFIG !== 'undefined' ? DEFAULT_CONFIG : this.createDefaultConfig()));
 
         const currentHash = this.hashConfig(baselineConfig);
         const savedHash = localStorage.getItem('ldr_config_hash');

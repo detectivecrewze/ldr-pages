@@ -223,6 +223,7 @@
 
     function getConfig() {
         if (window.CONFIG) return window.CONFIG;
+        if (typeof CONFIG !== 'undefined') return CONFIG;
         if (window.parent && window.parent !== window && window.parent.CONFIG) return window.parent.CONFIG;
         return {
             login: { password: 'forever', quote: 'Distance means so little when someone means so much' }

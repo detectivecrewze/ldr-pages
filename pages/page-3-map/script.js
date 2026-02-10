@@ -78,6 +78,8 @@ const JourneyMapPage = {
             this.config = window.parent.CONFIG;
         } else if (window.CONFIG) {
             this.config = window.CONFIG;
+        } else if (typeof CONFIG !== 'undefined') {
+            this.config = CONFIG;
         } else {
             this.config = {
                 journeyMap: {

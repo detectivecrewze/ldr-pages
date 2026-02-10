@@ -21,6 +21,9 @@ const MemoriesPage = {
         } else if (window.CONFIG) {
             console.log('Memories: Using window CONFIG');
             this.config = window.CONFIG;
+        } else if (typeof CONFIG !== 'undefined') {
+            console.log('Memories: Using global CONFIG');
+            this.config = CONFIG;
         } else {
             console.log('Memories: Using default config');
             this.config = {

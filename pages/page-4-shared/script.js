@@ -62,6 +62,15 @@ function init() {
         elements.cdDisc.classList.add('playing');
         elements.visualizer.classList.add('playing');
         updatePlayButton();
+    } else if (state.playlist.length > 0) {
+        // Auto-play first song if nothing is active and we have a playlist
+        // We use a small timeout to ensure the browser registers the user interaction 
+        // that opened this window (like the login button or desktop icon)
+        setTimeout(() => {
+            if (state.currentSongIndex === -1) {
+                playSong(0);
+            }
+        }, 500);
     }
 }
 

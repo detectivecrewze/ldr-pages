@@ -1,6 +1,29 @@
 // Renderers for dynamic content
 
 const renderers = {
+    // Render sidebar navigation
+    renderSidebar() {
+        const nav = document.getElementById('sidebarNav');
+        if (!nav) return;
+
+        nav.innerHTML = WIZARD_STEPS.map((step, index) => {
+            const isActive = index === state.currentStep;
+            const isCompleted = index < state.currentStep;
+
+            return `
+                <div class="sidebar-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" 
+                     onclick="app.goToStep(${index})">
+                    <div class="sidebar-icon">
+                        <span class="material-symbols-outlined">${step.icon}</span>
+                    </div>
+                    <div class="sidebar-text">
+                        <div class="sidebar-title">${step.title}</div>
+                        <div class="sidebar-desc">${step.description}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
 
     // Generic collapsible renderer
     renderCollapsible(index, title, description, bodyContent, onRemove = null, isOpen = false) {
@@ -694,23 +717,30 @@ const renderers = {
         }
     },
 
-    // Render Quiz Step
+    // ========================================
+    // QUIZ STEP (Simplified Premium Layout)
+    // ========================================
     renderQuizStep() {
-        const questions = state.config?.quiz?.questions || [];
         return `
             <div class="step-header">
-                <h2>Love Quiz</h2>
-                <p>Test how well you know each other.</p>
+                <h2>Love Quiz Admin</h2>
+                <p>Add and manage your relationship quiz questions.</p>
             </div>
+            
             <div class="space-y-6">
                 <div class="form-group">
-                    <label class="form-label">Quiz Questions</label>
-                    <div class="array-items" id="questionsList" oninput="state.saveArrayItems('questions', 'quiz')">
+                    <label class="form-label !text-gray-900 !font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-rose-500">quiz</span>
+                        Quiz Questions
+                    </label>
+                    <div id="questionsList" class="space-y-4">
                         ${this.renderQuizQuestions()}
                     </div>
-                    <button class="add-item-btn" onclick="renderers.addQuizQuestion()">
-                        <span class="material-symbols-outlined">add</span>
-                        Add Question
+                    
+                    <button class="add-item-btn mt-6 w-full justify-center !py-3 !bg-indigo-600 !text-white !border-0 hover:!bg-indigo-700 transition-all shadow-md group" 
+                        onclick="renderers.addQuizQuestion()">
+                        <span class="material-symbols-outlined group-hover:rotate-90 transition-transform">add_circle</span>
+                        Add New Question
                     </button>
                 </div>
             </div>
@@ -720,52 +750,87 @@ const renderers = {
     renderQuizQuestions() {
         const questions = state.config?.quiz?.questions || [];
         if (questions.length === 0) {
-            return '<p class="text-gray-400 text-sm italic">No questions yet. Add some!</p>';
-        }
-        return questions.map((q, index) => `
-            <div class="array-item" data-index="${index}">
-                <div class="flex-1 space-y-2">
-                    <input type="text" class="array-item-input w-full" data-field="question" 
-                        value="${q.question || ''}" placeholder="Question">
-                    <div class="grid grid-cols-2 gap-2">
-                        ${(q.answers || []).map((ans, i) => `
-                            <input type="text" class="array-item-input" data-field="answer${i}" 
-                                value="${ans}" placeholder="Answer ${i + 1}">
-                        `).join('')}
-                    </div>
-                    <input type="number" class="array-item-input" data-field="correct" 
-                        value="${q.correct || 0}" placeholder="Correct answer index (0-3)" style="width: 200px;">
+            return `
+                <div class="text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
+                    <div class="text-4xl mb-2 opacity-30">❓</div>
+                    <p class="text-gray-400 text-sm italic">No questions yet. Add your first one!</p>
                 </div>
-                <button class="array-item-remove" onclick="renderers.removeArrayItem(this)">
-                    <span class="material-symbols-outlined">delete</span>
-                </button>
-            </div>
-        `).join('');
+            `;
+        }
+
+        return questions.map((q, qIdx) => {
+            const answers = q.answers || ['', '', '', ''];
+
+            const bodyContent = `
+                <div class="space-y-5 pt-3">
+                    <div class="form-group">
+                        <label class="form-label !text-[10px] !text-gray-400">The Question</label>
+                        <input type="text" class="form-input !bg-white" value="${q.question || ''}" 
+                            placeholder="e.g. What is my favorite color?" 
+                            oninput="renderers.updateQuizQuestion(${qIdx}, 'question', this.value); this.closest('.dynamic-item').querySelector('.item-summary-title').textContent = this.value || 'Untitled Question'">
+                    </div>
+
+                    <div>
+                        <label class="form-label !text-[10px] !text-gray-400 mb-2">Options (Select the correct one)</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            ${answers.map((ans, aIdx) => `
+                                <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-100 shadow-sm focus-within:border-indigo-500 transition-all">
+                                    <div class="relative flex items-center justify-center">
+                                        <input type="radio" name="correct_${qIdx}" value="${aIdx}" 
+                                            ${q.correct === aIdx ? 'checked' : ''} 
+                                            class="w-5 h-5 text-indigo-600 border-gray-300 focus:ring-indigo-500 cursor-pointer"
+                                            onchange="renderers.updateQuizQuestion(${qIdx}, 'correct', ${aIdx})">
+                                    </div>
+                                    <input type="text" class="flex-1 text-sm bg-transparent border-none p-0 focus:ring-0" 
+                                        value="${ans}" placeholder="Option ${aIdx + 1}"
+                                        oninput="renderers.updateQuizOption(${qIdx}, ${aIdx}, this.value)">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return this.renderCollapsible(qIdx, q.question || 'Untitled Question', `Correct: Option ${q.correct + 1}`, bodyContent, `renderers.removeQuizQuestion(${qIdx})`, qIdx === 0);
+        }).join('');
     },
 
     addQuizQuestion() {
-        const container = document.getElementById('questionsList');
-        if (!container) return;
-        const newItem = document.createElement('div');
-        newItem.className = 'array-item';
-        newItem.innerHTML = `
-            <div class="flex-1 space-y-2">
-                <input type="text" class="array-item-input w-full" data-field="question" 
-                    placeholder="Question">
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" class="array-item-input" data-field="answer0" placeholder="Answer 1">
-                    <input type="text" class="array-item-input" data-field="answer1" placeholder="Answer 2">
-                    <input type="text" class="array-item-input" data-field="answer2" placeholder="Answer 3">
-                    <input type="text" class="array-item-input" data-field="answer3" placeholder="Answer 4">
-                </div>
-                <input type="number" class="array-item-input" data-field="correct" 
-                    value="0" placeholder="Correct answer index (0-3)" style="width: 200px;">
-            </div>
-            <button class="array-item-remove" onclick="renderers.removeArrayItem(this)">
-                <span class="material-symbols-outlined">delete</span>
-            </button>
-        `;
-        container.appendChild(newItem);
+        if (!state.config.quiz) state.config.quiz = { questions: [] };
+        if (!state.config.quiz.questions) state.config.quiz.questions = [];
+
+        state.config.quiz.questions.push({
+            question: '',
+            answers: ['', '', '', ''],
+            correct: 0
+        });
+
+        state.saveToStorage();
+        app.renderStep();
+    },
+
+    removeQuizQuestion(idx) {
+        if (state.config.quiz && state.config.quiz.questions) {
+            state.config.quiz.questions.splice(idx, 1);
+            state.saveToStorage();
+            app.renderStep();
+        }
+    },
+
+    updateQuizQuestion(qIdx, field, value) {
+        if (state.config.quiz && state.config.quiz.questions[qIdx]) {
+            state.config.quiz.questions[qIdx][field] = value;
+            state.saveToStorage();
+            state.broadcastUpdate();
+        }
+    },
+
+    updateQuizOption(qIdx, aIdx, value) {
+        if (state.config.quiz && state.config.quiz.questions[qIdx]) {
+            state.config.quiz.questions[qIdx].answers[aIdx] = value;
+            state.saveToStorage();
+            state.broadcastUpdate();
+        }
     },
 
     // Render Video Step

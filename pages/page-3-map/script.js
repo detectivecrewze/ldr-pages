@@ -436,7 +436,7 @@ const JourneyMapPage = {
 
     setupEventListeners() {
         document.getElementById('backButton').addEventListener('click', () => {
-            window.parent.postMessage({ type: 'NAVIGATE', direction: 'close' }, '*');
+            window.parent.postMessage({ type: 'NAVIGATE', direction: 'back', appId: 'journey' }, '*');
         });
 
         document.getElementById('nextButton').addEventListener('click', () => {
@@ -500,10 +500,14 @@ const JourneyMapPage = {
 
     proceedToNext() {
         this.closePopup();
+        // Do nothing else, just close the popup so user can explore as requested
+    },
+
+    finishJourney() {
+        this.closePopup();
         window.parent.postMessage({
             type: 'APP_COMPLETE',
-            appId: 'journey',
-            nextApp: 'memories'
+            appId: 'journey'
         }, '*');
     }
 };

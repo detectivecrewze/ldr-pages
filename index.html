@@ -815,6 +815,11 @@
                 const app = this.apps.find(a => a.id === appId);
                 if (!app) return;
 
+                // Auto-start background music after login on first interaction with content apps
+                if (window.audioState && window.audioState.currentSongIndex === -1 && appId !== 'login') {
+                    this.tryStartMusic();
+                }
+
                 // Check if unlocked
                 const appIndex = this.apps.findIndex(a => a.id === appId);
 
@@ -999,6 +1004,49 @@
                 document.getElementById('startMenu').classList.toggle('open', this.isStartMenuOpen);
             },
 
+            tryStartMusic() {
+                const config = window.CONFIG;
+                const playlist = config?.sharedWorld?.playlist || [];
+
+                if (playlist.length > 0 && window.audioState && window.audioState.currentSongIndex === -1 && window.bgAudio) {
+                    console.log('[Desktop] Attempting background music auto-play...');
+
+                    // Find first valid song URL
+                    const firstSongIndex = playlist.findIndex(s => s.url);
+                    if (firstSongIndex === -1) return;
+
+                    const song = playlist[firstSongIndex];
+                    window.bgAudio.src = song.url;
+
+                    const playPromise = window.bgAudio.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            window.audioState.isPlaying = true;
+                            window.audioState.currentSongIndex = firstSongIndex;
+                            window.audioState.playlist = playlist;
+                            console.log('[Desktop] Auto-play successful');
+                        }).catch(error => {
+                            console.log('[Desktop] Auto-play deferred (waiting for interaction):', error);
+                        });
+                    }
+                }
+            },
+
+            navigateBack(currentAppId) {
+                const currentIndex = this.apps.findIndex(a => a.id === currentAppId);
+                if (currentIndex > 0) {
+                    const prevApp = this.apps[currentIndex - 1];
+                    console.log('[Desktop] Navigating back to:', prevApp.id);
+                    this.closeApp();
+                    setTimeout(() => {
+                        this.openApp(prevApp.id);
+                    }, 300);
+                } else {
+                    console.log('[Desktop] Already at the first app, closing window.');
+                    this.closeApp();
+                }
+            },
+
             showError(message) {
                 alert(message); // Simple error for now
             },
@@ -1102,6 +1150,13 @@
                     }
                     if (e.data?.type === 'NAVIGATE' && e.data.direction === 'close') {
                         // Just close the window without unlocking next
+                        this.closeApp();
+                    }
+                    if (e.data?.type === 'NAVIGATE' && e.data.direction === 'back') {
+                        // Navigate to the previous app
+                        this.navigateBack(e.data.appId || this.currentApp?.id);
+                    }
+                    if (e.data?.type === 'CLOSE_WINDOW') {
                         this.closeApp();
                     }
                 });

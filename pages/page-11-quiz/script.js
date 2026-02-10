@@ -166,6 +166,7 @@ function showScreen(screenName) {
     } else if (screenName === 'install') {
         startInstallation();
     } else if (screenName === 'finish') {
+        showFinish();
         playSuccessSound();
     }
 }
@@ -180,7 +181,9 @@ function updateButtons() {
         case 'quiz':
             btnBack.disabled = false;
             btnNext.textContent = 'Next >';
-            btnNext.disabled = !state.answered;
+            btnNext.disabled = false;
+            btnNext.style.opacity = '1';
+            btnNext.style.pointerEvents = 'auto';
             break;
         case 'install':
             btnBack.disabled = true;
@@ -268,9 +271,7 @@ function checkAnswer(selectedIndex, btnElement) {
         errorDialog.classList.add('active');
         errorOverlay.classList.add('active');
 
-        // Reset after dialog close
-        state.answered = false;
-        updateButtons();
+        // Wait for OK button to reset answered state
     }
 }
 
@@ -352,6 +353,18 @@ btnNext.addEventListener('click', () => {
             showScreen('quiz');
             break;
         case 'quiz':
+            // If they haven't answered, warn them or just let them skip
+            if (!state.answered) {
+                // For a quiz, it's usually better to force an answer, 
+                // but if they click Next manually we'll just let them go or show a hint
+                const allBtns = document.querySelectorAll('.answer-btn');
+                const hasWrong = Array.from(allBtns).some(b => b.classList.contains('wrong'));
+                if (!hasWrong) {
+                    // If no answer selected yet, show a tiny hint but let them click again
+                    console.log('User clicked Next without answering');
+                }
+            }
+
             if (state.currentQuestion < state.questions.length - 1) {
                 state.currentQuestion++;
                 showQuestion();
@@ -414,7 +427,7 @@ document.getElementById('errorOkBtn').addEventListener('click', () => {
 document.getElementById('closeBtn').addEventListener('click', () => {
     playClickSound();
     if (window.parent !== window) {
-        window.parent.postMessage({ type: 'CLOSE_WINDOW' }, '*');
+        window.parent.postMessage({ type: 'NAVIGATE', direction: 'close' }, '*');
     }
 });
 

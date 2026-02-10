@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video_Vault.exe - Windows Media Player</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="../../data.js?v=3"></script>
+</head>
+
+<body>
+    <div class="window-content-area">
+        <!-- Windows Media Player Window -->
+        <div class="wmp-window">
+            <!-- Title Bar -->
+            <div class="wmp-titlebar">
+                <div class="title-left">
+                    <span class="wmp-icon">📹</span>
+                    <span class="title-text">Video_Vault.exe - Windows Media Player</span>
+                </div>
+                <div class="title-buttons">
+                    <button class="wmp-btn minimize">_</button>
+                    <button class="wmp-btn maximize">□</button>
+                    <button class="wmp-btn close">×</button>
+                </div>
+            </div>
+
+            <!-- Menu Bar -->
+            <div class="wmp-menubar">
+                <span class="menu-item">File</span>
+                <span class="menu-item">View</span>
+                <span class="menu-item">Play</span>
+                <span class="menu-item">Tools</span>
+                <span class="menu-item">Help</span>
+            </div>
+
+            <!-- Main Player Area -->
+            <div class="wmp-body">
+                <!-- Video Display Area -->
+                <div class="video-section">
+                    <div class="video-display" id="videoDisplay">
+                        <div class="video-placeholder" id="videoPlaceholder">
+                            <div class="placeholder-icon">📹</div>
+                            <div class="placeholder-text">Ready to play memories</div>
+                            <div class="placeholder-hint">Select a video from the playlist</div>
+                        </div>
+                        <video id="videoPlayer" class="video-element" controls style="display: none;">
+                            <source src="" type="video/mp4">
+                        </video>
+
+                        <!-- Overlay when playing -->
+                        <div class="video-overlay" id="videoOverlay" style="display: none;">
+                            <div class="now-playing-badge">
+                                <span class="np-icon">▶</span>
+                                <span class="np-text" id="nowPlayingText">Playing...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seek Bar / Track Bar -->
+                    <div class="seekbar-container">
+                        <div class="time-current" id="currentTime">0:00</div>
+                        <div class="seekbar-track" id="seekbarTrack">
+                            <div class="seekbar-fill" id="seekbarFill"></div>
+                            <div class="seekbar-thumb" id="seekbarThumb"></div>
+                        </div>
+                        <div class="time-total" id="totalTime">0:00</div>
+                    </div>
+                </div>
+
+                <!-- Playlist Panel (Right Side) -->
+                <div class="playlist-panel">
+                    <div class="playlist-header">
+                        <span class="pl-icon">📋</span>
+                        <span>Playlist</span>
+                        <span class="pl-count" id="playlistCount">(0)</span>
+                    </div>
+                    <div class="playlist-list" id="playlistContainer">
+                        <!-- Videos populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Bar (Classic WMP Style) -->
+            <div class="wmp-controlbar">
+                <!-- Main Controls -->
+                <div class="control-group main-controls">
+                    <button class="ctrl-btn prev" id="prevBtn" title="Previous">⏮</button>
+                    <button class="ctrl-btn play" id="playBtn" title="Play">▶</button>
+                    <button class="ctrl-btn pause" id="pauseBtn" title="Pause" style="display: none;">⏸</button>
+                    <button class="ctrl-btn stop" id="stopBtn" title="Stop">⏹</button>
+                    <button class="ctrl-btn next" id="nextBtn" title="Next">⏭</button>
+                </div>
+
+                <!-- Divider -->
+                <div class="control-divider"></div>
+
+                <!-- Secondary Controls -->
+                <div class="control-group secondary-controls">
+                    <button class="ctrl-btn-small" title="Mute">🔊</button>
+                    <div class="volume-slider">
+                        <div class="volume-track">
+                            <div class="volume-fill"></div>
+                        </div>
+                    </div>
+                    <button class="ctrl-btn-small" title="Repeat">🔁</button>
+                    <button class="ctrl-btn-small" title="Shuffle">🔀</button>
+                </div>
+
+                <!-- Divider -->
+                <div class="control-divider"></div>
+
+                <!-- Info Display -->
+                <div class="info-display">
+                    <div class="info-line1" id="infoTitle">No video selected</div>
+                    <div class="info-line2" id="infoDetails">--</div>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="wmp-statusbar">
+                <div class="status-left">
+                    <span class="status-icon">📹</span>
+                    <span id="statusText">Ready</span>
+                </div>
+                <div class="status-right">
+                    <span id="videoDimensions">-- x --</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-area">
+            <button class="nav-btn" id="backBtn">&lt; Back</button>
+            <button class="nav-btn primary" id="continueBtn">Continue &gt;</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

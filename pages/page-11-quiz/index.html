@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relationship Compatibility Setup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="../../data.js?v=3"></script>
+</head>
+<body>
+    <div class="window-content-area">
+        <!-- Setup Wizard Window -->
+        <div class="wizard-window">
+            <!-- Title Bar -->
+            <div class="wizard-title-bar">
+                <div class="wizard-title">
+                    <span class="wizard-icon">📀</span>
+                    <span>Relationship Compatibility Setup Wizard</span>
+                </div>
+                <div class="wizard-controls">
+                    <button class="wizard-btn">?</button>
+                    <button class="wizard-btn" id="closeBtn">×</button>
+                </div>
+            </div>
+
+            <!-- Wizard Content -->
+            <div class="wizard-content">
+                <!-- Left Sidebar -->
+                <div class="wizard-sidebar">
+                    <div class="sidebar-title">Setup Steps</div>
+                    <div class="sidebar-steps">
+                        <div class="step-item active" id="step-welcome">
+                            <span class="step-number">1</span>
+                            <span class="step-text">Welcome</span>
+                        </div>
+                        <div class="step-item" id="step-quiz">
+                            <span class="step-number">2</span>
+                            <span class="step-text">Compatibility Test</span>
+                        </div>
+                        <div class="step-item" id="step-install">
+                            <span class="step-number">3</span>
+                            <span class="step-text">Installing Love</span>
+                        </div>
+                        <div class="step-item" id="step-finish">
+                            <span class="step-number">4</span>
+                            <span class="step-text">Complete</span>
+                        </div>
+                    </div>
+                    <div class="sidebar-logo">❤️</div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="wizard-main">
+                    <!-- Welcome Screen -->
+                    <div class="screen active" id="screen-welcome">
+                        <h2 class="screen-title">Welcome to Relationship Compatibility Setup</h2>
+                        <div class="screen-content">
+                            <div class="welcome-icon">💕</div>
+                            <p class="welcome-text">
+                                This wizard will test your memory about your relationship journey together.
+                            </p>
+                            <p class="welcome-text">
+                                Answer the questions correctly to install <strong>"Everlasting Love v1.0"</strong> into your hearts.
+                            </p>
+                            <div class="system-requirements">
+                                <strong>System Requirements:</strong>
+                                <ul>
+                                    <li>💗 Minimum: 1 caring heart</li>
+                                    <li>⏱️ Patience: Unlimited recommended</li>
+                                    <li>🧠 Memory: Shared experiences</li>
+                                    <li>💕 Love: Required for installation</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Screen -->
+                    <div class="screen" id="screen-quiz">
+                        <h2 class="screen-title">Compatibility Test</h2>
+                        <div class="screen-content">
+                            <div class="question-counter">
+                                Question <span id="currentQ">1</span> of <span id="totalQ">5</span>
+                            </div>
+                            <div class="question-box">
+                                <div class="question-icon">❓</div>
+                                <p class="question-text" id="questionText">Loading question...</p>
+                            </div>
+                            <div class="answers" id="answersContainer">
+                                <!-- Answers populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Installing Screen -->
+                    <div class="screen" id="screen-install">
+                        <h2 class="screen-title">Installing Love...</h2>
+                        <div class="screen-content">
+                            <div class="install-status">
+                                <div class="install-icon">💿</div>
+                                <p class="install-text" id="installText">Preparing installation...</p>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>Progress</span>
+                                    <span id="progressPercent">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill"></div>
+                                </div>
+                            </div>
+                            <div class="install-details" id="installDetails">
+                                Extracting memories...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Finish Screen -->
+                    <div class="screen" id="screen-finish">
+                        <h2 class="screen-title">Installation Complete!</h2>
+                        <div class="screen-content">
+                            <div class="finish-icon">🎉</div>
+                            <p class="finish-text">
+                                <strong>Congratulations!</strong>
+                            </p>
+                            <p class="finish-text">
+                                "Everlasting Love v1.0" has been successfully installed in both your hearts.
+                            </p>
+                            <div class="compatibility-score">
+                                <div class="score-label">Compatibility Score</div>
+                                <div class="score-value" id="scoreValue">100%</div>
+                                <div class="score-message" id="scoreMessage">Perfect Match! 💕</div>
+                            </div>
+                            <div class="license-key">
+                                <strong>License Key:</strong> LOVE-FOREVER-YOU-AND-ME
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wizard Footer / Buttons -->
+            <div class="wizard-footer">
+                <button class="footer-btn" id="btn-back" disabled>&lt; Back</button>
+                <button class="footer-btn primary" id="btn-next">Next &gt;</button>
+                <button class="footer-btn" id="btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Dialog (Hidden by default) -->
+    <div class="error-dialog" id="errorDialog">
+        <div class="error-title-bar">
+            <span class="error-icon">❌</span>
+            <span>Error</span>
+        </div>
+        <div class="error-content">
+            <div class="error-big-icon">❌</div>
+            <p class="error-message" id="errorMessage">Incorrect answer!</p>
+            <p class="error-hint" id="errorHint">Try again!</p>
+        </div>
+        <div class="error-buttons">
+            <button class="error-btn" id="errorOkBtn">OK</button>
+        </div>
+    </div>
+
+    <!-- Overlay for error -->
+    <div class="error-overlay" id="errorOverlay"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

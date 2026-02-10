@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Bucket List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="../../data.js?v=3"></script>
+</head>
+
+<body>
+    <div class="window-content-area">
+        <!-- Header -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="pixel-icon">📋</span>
+                <span>Our Bucket List</span>
+            </div>
+            <div class="panel-content compact">
+                <div class="page-title">Things To Do Together</div>
+                <div class="page-subtitle">When we're finally in the same place ✨</div>
+            </div>
+        </div>
+
+        <!-- Progress Stats -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-number" id="totalItems">0</span>
+                <span class="stat-label">Total Dreams</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="completedItems">0</span>
+                <span class="stat-label">Done</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="progressPercent">0%</span>
+                <span class="stat-label">Progress</span>
+            </div>
+        </div>
+
+        <!-- Checklist Container -->
+        <div class="checklist-panel">
+            <div class="checklist-header">
+                <div class="checklist-title">☑ OUR SHARED FUTURE GOALS</div>
+                <div class="checklist-date">Date: _______________</div>
+            </div>
+
+            <!-- Categories -->
+            <div class="checklist-categories" id="checklistContainer">
+                <!-- Daily Life -->
+                <div class="category-section">
+                    <div class="category-title">🏠 Daily Life</div>
+                    <div class="checklist-items" id="dailyItems">
+                        <!-- Items populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Adventures -->
+                <div class="category-section">
+                    <div class="category-title">🌴 Adventures</div>
+                    <div class="checklist-items" id="adventureItems">
+                        <!-- Items populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Food & Dining -->
+                <div class="category-section">
+                    <div class="category-title">🍜 Food & Dining</div>
+                    <div class="checklist-items" id="foodItems">
+                        <!-- Items populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signature Line -->
+            <div class="checklist-footer">
+                <div class="signature-line">
+                    <span>Checked by:</span>
+                    <span class="signature">_______________________</span>
+                </div>
+                <div class="priority-note">
+                    * Priority: Complete all items before 2027
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="button-row">
+            <button class="win98-button" id="backButton">
+                <span class="button-text">← Back</span>
+            </button>
+            <button class="win98-button primary" id="finishButton">
+                <span class="button-text">Finish ♥</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

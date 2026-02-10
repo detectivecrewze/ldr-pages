@@ -1,0 +1,483 @@
+/* Windows 98 Style Memories Gallery - Windowed Version */
+
+:root {
+    --win-teal: #008080;
+    --win-blue: #000080;
+    --win-blue-light: #1084d0;
+    --win-gray: #c0c0c0;
+    --win-gray-light: #dfdfdf;
+    --win-gray-dark: #808080;
+    --win-black: #000000;
+    --win-white: #ffffff;
+    --win-gold: #c9a227;
+    --border-light: #ffffff;
+    --border-highlight: #dfdfdf;
+    --border-shadow: #808080;
+    --border-dark: #404040;
+    --title-bar-start: #000080;
+    --title-bar-end: #1084d0;
+    --window-bg: #c0c0c0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    image-rendering: pixelated;
+}
+
+html,
+body {
+    font-family: 'Pixelify Sans', 'MS Sans Serif', sans-serif;
+    background: var(--win-gray);
+    min-height: 100%;
+    height: auto;
+    font-size: 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Window Content Area */
+.window-content-area {
+    padding: 12px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* Panel */
+.panel {
+    background: var(--window-bg);
+    border: 2px outset var(--border-light);
+    margin-bottom: 12px;
+}
+
+.panel-header {
+    background: linear-gradient(90deg, var(--win-blue) 0%, var(--win-blue-light) 100%);
+    color: var(--win-white);
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 2px solid var(--border-dark);
+}
+
+.pixel-icon {
+    font-size: 12px;
+}
+
+.panel-content {
+    padding: 16px;
+}
+
+.panel-content.compact {
+    padding: 12px;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--win-blue);
+    margin-bottom: 4px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.page-subtitle {
+    font-size: 11px;
+    color: var(--win-gray-dark);
+}
+
+/* Stats Bar */
+.stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--win-gray-light);
+    border: 2px inset var(--border-shadow);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-family: 'VT323', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--win-blue);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 10px;
+    color: var(--win-gray-dark);
+    text-transform: uppercase;
+}
+
+/* Polaroid Grid */
+.polaroid-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+}
+
+.polaroid {
+    background: var(--win-white);
+    border: 2px outset var(--border-light);
+    padding: 8px 8px 12px 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.polaroid:hover {
+    transform: translateY(-4px) rotate(-1deg);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.polaroid:nth-child(even):hover {
+    transform: translateY(-4px) rotate(1deg);
+}
+
+.polaroid-image {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border: 1px solid var(--border-shadow);
+    margin-bottom: 8px;
+    background: var(--win-gray-light);
+}
+
+.polaroid-caption {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--win-black);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.polaroid-date {
+    font-size: 9px;
+    color: var(--win-gray-dark);
+    text-align: center;
+    margin-top: 2px;
+}
+
+/* Memory Timeline */
+.memory-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.timeline-memory-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: var(--win-gray-light);
+    border: 2px outset var(--border-light);
+    cursor: pointer;
+}
+
+.timeline-memory-item:hover {
+    background: var(--win-white);
+}
+
+.timeline-thumb {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border: 1px solid var(--border-shadow);
+}
+
+.timeline-info {
+    flex: 1;
+}
+
+.timeline-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--win-black);
+}
+
+.timeline-date {
+    font-size: 10px;
+    color: var(--win-blue);
+    margin-top: 2px;
+}
+
+.timeline-note {
+    font-size: 10px;
+    color: var(--win-gray-dark);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Button Row */
+.button-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* Windows 98 Button */
+.win98-button {
+    padding: 6px 16px;
+    background: var(--window-bg);
+    border: 2px outset var(--border-light);
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    min-width: 80px;
+}
+
+.win98-button:active {
+    border-style: inset;
+    padding: 7px 15px 5px 17px;
+}
+
+.win98-button.primary {
+    font-weight: 600;
+    margin-left: auto;
+    background: linear-gradient(180deg, #ff6b9d 0%, #c44569 100%);
+    color: var(--win-white);
+}
+
+.button-text {
+    display: block;
+}
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.lightbox.active {
+    display: flex;
+}
+
+.lightbox-content {
+    background: var(--win-gray);
+    border: 3px outset var(--border-light);
+    max-width: 90%;
+    max-height: 90%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 30px;
+    height: 30px;
+    background: var(--win-gray);
+    border: 2px outset var(--border-light);
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.lightbox-close:active {
+    border-style: inset;
+}
+
+.lightbox-image-container {
+    background: var(--win-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 60vh;
+}
+
+.lightbox-image-container img {
+    max-width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+}
+
+.lightbox-info {
+    padding: 16px;
+    text-align: center;
+    background: var(--win-gray-light);
+    border-top: 2px solid var(--border-shadow);
+}
+
+.lightbox-info h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--win-black);
+    margin-bottom: 4px;
+}
+
+.lightbox-info p {
+    font-size: 11px;
+    color: var(--win-gray-dark);
+    margin-bottom: 2px;
+}
+
+.lightbox-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 12px;
+    background: var(--win-gray);
+    border-top: 1px solid var(--border-shadow);
+}
+
+.nav-btn {
+    padding: 6px 12px;
+    background: var(--win-gray);
+    border: 2px outset var(--border-light);
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.nav-btn:active {
+    border-style: inset;
+}
+
+#photoCounter {
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    color: var(--win-black);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-bar {
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 8px;
+    }
+
+    .stat-item {
+        flex: 1 1 70px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    .window-content-area {
+        padding: 6px;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .panel-content {
+        padding: 10px 6px;
+    }
+
+    .stats-bar {
+        gap: 6px;
+        padding: 8px 4px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stat-number {
+        font-size: 18px;
+    }
+
+    .stat-label {
+        font-size: 8px;
+    }
+
+    .polaroid-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    /* Small devices or narrow windows: 1 column */
+    @media (max-width: 340px) {
+        .polaroid-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .polaroid {
+            max-width: 240px;
+            margin: 0 auto;
+        }
+    }
+
+    .polaroid {
+        padding: 6px 6px 10px 6px;
+        min-width: 0;
+    }
+
+    .polaroid-caption {
+        font-size: 10px;
+    }
+
+    .lightbox-content {
+        max-width: 98%;
+        width: 100%;
+    }
+
+    .lightbox-nav {
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .nav-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+        min-width: 60px;
+    }
+}
+
+/* Scrollbar styling */
+.memory-timeline::-webkit-scrollbar {
+    width: 12px;
+}
+
+.memory-timeline::-webkit-scrollbar-track {
+    background: var(--win-gray-light);
+    border-left: 1px solid var(--border-shadow);
+}
+
+.memory-timeline::-webkit-scrollbar-thumb {
+    background: var(--win-gray);
+    border: 2px outset var(--border-light);
+}
+
+.memory-timeline::-webkit-scrollbar-thumb:active {
+    border-style: inset;
+}
+
+/* Selection */
+::selection {
+    background: var(--win-blue);
+    color: var(--win-white);
+}

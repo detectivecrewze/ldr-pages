@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Messenger</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="../../data.js?v=3"></script>
+</head>
+
+<body>
+    <div class="window-content-area">
+        <!-- MSN/ICQ Style Messenger Window -->
+        <div class="messenger-window">
+            <!-- Title Bar -->
+            <div class="messenger-title-bar">
+                <div class="messenger-title">
+                    <span class="messenger-icon">💬</span>
+                    <span>Love Messenger - Conversation History</span>
+                </div>
+                <div class="messenger-controls">
+                    <button class="messenger-btn minimize">_</button>
+                    <button class="messenger-btn maximize">□</button>
+                    <button class="messenger-btn close">×</button>
+                </div>
+            </div>
+
+            <!-- Menu Bar -->
+            <div class="messenger-menu">
+                <span>File</span>
+                <span>Edit</span>
+                <span>View</span>
+                <span>Actions</span>
+                <span>Help</span>
+            </div>
+
+            <!-- User Info Bar -->
+            <div class="messenger-user-bar">
+                <div class="user-avatar" id="partnerAvatar">❤️</div>
+                <div class="user-info">
+                    <div class="user-name"><span id="partnerName">My Love</span> <span class="status-online">●
+                            Online</span></div>
+                    <div class="user-status" id="partnerStatus">"Distance means so little..."</div>
+                </div>
+                <div class="user-actions">
+                    <button class="action-btn">📞</button>
+                    <button class="action-btn">📹</button>
+                    <button class="action-btn">🎁</button>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-container" id="chatContainer">
+                <div class="chat-history" id="chatHistory">
+                    <!-- Chat messages will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Typing Area -->
+            <div class="typing-area">
+                <div class="typing-toolbar">
+                    <button class="toolbar-btn">B</button>
+                    <button class="toolbar-btn">I</button>
+                    <button class="toolbar-btn">U</button>
+                    <span class="toolbar-divider">|</span>
+                    <button class="toolbar-btn">😊</button>
+                    <button class="toolbar-btn">🎵</button>
+                    <button class="toolbar-btn">📎</button>
+                </div>
+                <div class="typing-input">
+                    <textarea placeholder="Type a message... (This is a demo conversation)" readonly></textarea>
+                    <button class="send-btn" id="nextBtn">Send →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="button-row">
+            <button class="win98-button" id="backButton">
+                <span class="button-text">← Back</span>
+            </button>
+            <button class="win98-button primary" id="continueButton">
+                <span class="button-text">Next →</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

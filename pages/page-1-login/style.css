@@ -1,0 +1,479 @@
+/* Windows 98 Style Login Page - Windowed Version */
+
+:root {
+    /* Windows 98 Classic Colors */
+    --win-teal: #008080;
+    --win-blue: #000080;
+    --win-blue-light: #1084d0;
+    --win-gray: #c0c0c0;
+    --win-gray-light: #dfdfdf;
+    --win-gray-dark: #808080;
+    --win-black: #000000;
+    --win-white: #ffffff;
+    --win-red: #ff0000;
+    --win-green: #008000;
+
+    /* 3D Border Colors */
+    --border-light: #ffffff;
+    --border-highlight: #dfdfdf;
+    --border-shadow: #808080;
+    --border-dark: #404040;
+
+    /* Specific UI Colors */
+    --title-bar-start: #000080;
+    --title-bar-end: #1084d0;
+    --button-face: #c0c0c0;
+    --window-bg: #c0c0c0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+html,
+body {
+    font-family: 'Pixelify Sans', 'MS Sans Serif', sans-serif;
+    background: var(--win-gray);
+    min-height: 100%;
+    height: auto;
+    font-size: 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Window Content Area */
+.window-content-area {
+    padding: 12px;
+    max-width: 100%;
+    margin: 0 auto;
+    min-height: 100%;
+}
+
+/* Cover Photo */
+.login-cover {
+    width: 100%;
+    height: 150px;
+    background: var(--win-gray-light);
+    border: 2px inset var(--border-highlight);
+    margin-bottom: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Message Box (Info) */
+.message-box {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background: var(--window-bg);
+    border: 2px inset var(--border-highlight);
+    margin-bottom: 12px;
+}
+
+.message-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--win-blue);
+    color: var(--win-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    flex-shrink: 0;
+    border: 2px solid var(--win-white);
+    box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.3), inset -2px -2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.message-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--win-black);
+}
+
+.message-text p {
+    font-style: italic;
+}
+
+/* Panel */
+.panel {
+    background: var(--window-bg);
+    border: 2px outset var(--border-light);
+    margin-bottom: 12px;
+}
+
+.panel-header {
+    background: linear-gradient(90deg, var(--win-blue) 0%, var(--win-blue-light) 100%);
+    color: var(--win-white);
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 2px solid var(--border-dark);
+}
+
+.panel-icon {
+    font-size: 14px;
+}
+
+.panel-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Windows 98 Pixel Heart */
+.win98-heart {
+    width: 56px;
+    height: 48px;
+    position: relative;
+    animation: heartbeat 1.2s infinite;
+}
+
+.heart-pixel-row {
+    position: absolute;
+    height: 5px;
+    background: var(--win-red);
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.4), inset -1px -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.row-1 {
+    top: 5px;
+    left: 11px;
+    width: 11px;
+}
+
+.row-1::after {
+    content: '';
+    position: absolute;
+    left: 22px;
+    width: 11px;
+    height: 100%;
+    background: var(--win-red);
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.4), inset -1px -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.row-2 {
+    top: 10px;
+    left: 5px;
+    width: 45px;
+}
+
+.row-3 {
+    top: 15px;
+    left: 0;
+    width: 56px;
+}
+
+.row-4 {
+    top: 20px;
+    left: 0;
+    width: 56px;
+}
+
+.row-5 {
+    top: 25px;
+    left: 5px;
+    width: 45px;
+}
+
+.row-6 {
+    top: 30px;
+    left: 11px;
+    width: 33px;
+}
+
+.row-7 {
+    top: 35px;
+    left: 16px;
+    width: 22px;
+}
+
+@keyframes heartbeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.win98-heart.connected {
+    filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.6));
+}
+
+.win98-heart.connected .heart-pixel-row {
+    background: #ff3333;
+}
+
+/* Distance Bar */
+.distance-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.location-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--win-black);
+    min-width: 40px;
+    text-align: center;
+}
+
+.progress-container {
+    flex: 1;
+}
+
+.progress-track {
+    height: 20px;
+    background: var(--win-white);
+    border: 2px inset var(--border-highlight);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(180deg, #0000ff 0%, #000080 100%);
+    transition: width 1s ease;
+}
+
+.distance-text {
+    font-size: 11px;
+    text-align: center;
+    margin-top: 4px;
+    color: var(--win-black);
+}
+
+/* Stats Content */
+.stats-content {
+    padding: 10px;
+}
+
+.stat-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.stat-row:last-child {
+    margin-bottom: 0;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--win-black);
+    min-width: 100px;
+}
+
+.stat-value {
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    color: var(--win-blue);
+    font-weight: bold;
+    min-width: 60px;
+    text-align: right;
+}
+
+.stat-value.small {
+    font-size: 16px;
+}
+
+.stat-unit {
+    font-size: 12px;
+    color: var(--win-gray-dark);
+}
+
+/* Input Group */
+.input-group {
+    margin-bottom: 12px;
+}
+
+.input-label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: var(--win-black);
+}
+
+.text-box-wrapper {
+    position: relative;
+}
+
+.win98-textbox {
+    width: 100%;
+    padding: 6px 8px;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    border: 2px inset var(--border-highlight);
+    background: var(--win-white);
+    outline: none;
+}
+
+.win98-textbox:focus {
+    outline: 1px dotted var(--win-black);
+    outline-offset: -3px;
+}
+
+.win98-textbox.error {
+    background: #ffe0e0;
+}
+
+/* Error Dialog */
+.error-dialog {
+    display: none;
+    background: var(--window-bg);
+    border: 2px outset var(--border-light);
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.error-dialog.show {
+    display: block;
+    animation: error-shake 0.3s ease;
+}
+
+@keyframes error-shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+.error-content {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.error-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.error-title {
+    font-weight: bold;
+    color: var(--win-red);
+    margin-bottom: 4px;
+}
+
+.error-message {
+    font-size: 12px;
+    color: var(--win-black);
+}
+
+/* Button Row */
+.button-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* Windows 98 Button */
+.win98-button {
+    padding: 6px 20px;
+    background: var(--button-face);
+    border: 2px outset var(--border-light);
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    position: relative;
+    min-width: 75px;
+}
+
+.win98-button:active {
+    border-style: inset;
+    padding: 7px 19px 5px 21px;
+}
+
+.win98-button:focus {
+    outline: 1px dotted var(--win-black);
+    outline-offset: -4px;
+}
+
+.win98-button.primary {
+    font-weight: 600;
+}
+
+.win98-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.button-text {
+    display: block;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .window-content-area {
+        padding: 10px;
+    }
+
+    .message-box {
+        padding: 8px;
+    }
+
+    .message-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .panel-content {
+        padding: 12px;
+    }
+
+    .win98-heart {
+        width: 48px;
+        height: 42px;
+    }
+
+    .stat-value {
+        font-size: 18px;
+    }
+
+    .button-row {
+        justify-content: center;
+    }
+}
+
+/* Selection */
+::selection {
+    background: var(--win-blue);
+    color: var(--win-white);
+}

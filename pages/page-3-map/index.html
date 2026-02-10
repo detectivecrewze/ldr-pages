@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journey Map - Long Distance Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap"
+        rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="style.css">
+    <script src="../../data.js?v=3"></script>
+</head>
+
+<body>
+    <div class="window-content-area">
+        <!-- Header Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="pixel-icon">🗺</span>
+                <span>Our Adventure Map</span>
+            </div>
+            <div class="panel-content compact">
+                <div class="page-title">Places We've Been Together</div>
+                <div class="page-subtitle">Every pin is a heartbeat, every line a path we walked</div>
+            </div>
+        </div>
+
+        <!-- Map Stats -->
+        <div class="map-stats-bar">
+            <div class="map-stat">
+                <span class="map-stat-icon">📍</span>
+                <span class="map-stat-value" id="pinCount">0</span>
+                <span class="map-stat-label">Places</span>
+            </div>
+            <div class="map-stat">
+                <span class="map-stat-icon">📏</span>
+                <span class="map-stat-value" id="totalDistance">0</span>
+                <span class="map-stat-label">Km Traveled</span>
+            </div>
+            <div class="map-stat">
+                <span class="map-stat-icon">📅</span>
+                <span class="map-stat-value" id="tripDuration">0</span>
+                <span class="map-stat-label">Days</span>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-panel traveler-map">
+            <!-- Loading Overlay -->
+            <div class="map-loading" id="mapLoading">
+                <div class="compass-loading">
+                    <div class="compass-rose">
+                        <div class="compass-ring"></div>
+                        <div class="compass-rose-inner">N</div>
+                        <div class="compass-needle">↑</div>
+                    </div>
+                    <p class="loading-text" id="loadingText">Preparing your journey...</p>
+                    <div class="loading-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="loadingProgress"></div>
+                        </div>
+                        <span class="progress-percent" id="loadingPercent">0%</span>
+                    </div>
+                    <div class="loading-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaflet Map -->
+            <div id="loveMap" class="map-element"></div>
+
+            <!-- Vintage Filter Overlay -->
+            <div class="map-vintage-overlay"></div>
+
+            <!-- Current Location Info Card -->
+            <div class="location-info-card" id="locationCard">
+                <button class="card-close" id="cardClose">×</button>
+                <img src="" alt="" id="cardImage" class="card-image">
+                <div class="card-content">
+                    <h3 id="cardTitle"></h3>
+                    <p id="cardDate" class="card-date"></p>
+                    <p id="cardNote" class="card-note"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pin Navigator -->
+        <div class="pin-navigator" id="pinNavigator">
+            <button class="nav-btn" id="prevPin">← Prev</button>
+            <div class="pin-counter">
+                <span id="currentPin">1</span> / <span id="totalPins">5</span>
+            </div>
+            <button class="nav-btn" id="nextPin">Next →</button>
+        </div>
+
+        <!-- Pin List -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="pixel-icon">📍</span>
+                <span>Our Journey Stops</span>
+            </div>
+            <div class="panel-content">
+                <div class="pin-list" id="pinList">
+                    <!-- Pin list items populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="button-row">
+            <button class="win98-button" id="backButton">
+                <span class="button-text">← Back</span>
+            </button>
+            <button class="win98-button primary" id="nextButton">
+                <span class="button-text">Next →</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Completion Popup -->
+    <div class="completion-overlay" id="completionPopup">
+        <div class="completion-window">
+            <div class="completion-title-bar">
+                <span class="title-text">Journey Complete</span>
+                <button class="title-bar-close" onclick="JourneyMapPage.closePopup()">×</button>
+            </div>
+            <div class="completion-content">
+                <div class="completion-icon">💖</div>
+                <h2 class="completion-heading">What a Journey!</h2>
+                <p class="completion-text">We've traveled <span id="popupDistance">0</span> km and visited <span
+                        id="popupPlaces">0</span> <span id="popupPlacesLabel">places</span> together. Every moment has
+                    been better
+                    with you by my side.</p>
+                <div class="completion-footer">
+                    <button class="win98-button primary" onclick="JourneyMapPage.proceedToNext()">
+                        <span class="button-text">Keep Exploring →</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

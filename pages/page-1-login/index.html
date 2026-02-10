@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Long Distance Love</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="../../data.js?v=3"></script>
+</head>
+
+<body>
+    <!-- Main Content Container -->
+    <div class="window-content-area">
+        <!-- Cover Photo (Dynamic) -->
+        <div class="login-cover">
+            <img src="" alt="LDR" id="loginPhoto" onerror="this.parentElement.style.display='none'">
+        </div>
+
+        <!-- Header Quote -->
+        <div class="message-box info">
+            <div class="message-icon">ℹ</div>
+            <div class="message-text">
+                <p id="quoteText">"Distance means so little"</p>
+                <p id="quoteText2">"when someone means so much"</p>
+            </div>
+        </div>
+
+        <!-- Heart Animation Area -->
+        <div class="panel">
+            <div class="panel-header">Connection Status</div>
+            <div class="panel-content">
+                <!-- Windows 98 style pixel heart -->
+                <div class="win98-heart" id="pixelHeart">
+                    <div class="heart-pixel-row row-1"></div>
+                    <div class="heart-pixel-row row-2"></div>
+                    <div class="heart-pixel-row row-3"></div>
+                    <div class="heart-pixel-row row-4"></div>
+                    <div class="heart-pixel-row row-5"></div>
+                    <div class="heart-pixel-row row-6"></div>
+                    <div class="heart-pixel-row row-7"></div>
+                </div>
+
+                <!-- Distance visualization -->
+                <div class="distance-bar">
+                    <div class="location-label" id="youLabel">You</div>
+                    <div class="progress-container">
+                        <div class="progress-track">
+                            <div class="progress-fill" id="distanceFill"></div>
+                        </div>
+                        <div class="distance-text" id="distanceText">0 km apart</div>
+                    </div>
+                    <div class="location-label" id="themLabel">Them</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Box -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-icon">📊</span>
+                <span>Relationship Statistics</span>
+            </div>
+            <div class="stats-content">
+                <div class="stat-row">
+                    <span class="stat-label">Connected for:</span>
+                    <span class="stat-value" id="daysCounter">000</span>
+                    <span class="stat-unit">days</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Last login:</span>
+                    <span class="stat-value small" id="lastLogin">Never</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Password Input Dialog -->
+        <div class="input-group">
+            <label class="input-label">Enter access code:</label>
+            <div class="text-box-wrapper">
+                <input type="password" id="passwordInput" class="win98-textbox" placeholder="••••••" maxlength="20"
+                    autocomplete="off">
+            </div>
+        </div>
+
+        <!-- Error Message Box -->
+        <div class="error-dialog" id="errorDialog">
+            <div class="error-content">
+                <div class="error-icon">⚠</div>
+                <div class="error-text">
+                    <div class="error-title">Error</div>
+                    <div class="error-message" id="errorMessage">Incorrect password. Please try again.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-row">
+            <button class="win98-button primary" id="loginButton">
+                <span class="button-text">OK</span>
+            </button>
+            <button class="win98-button" id="cancelButton">
+                <span class="button-text">Cancel</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

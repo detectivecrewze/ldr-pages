@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media_Player.exe - Win98 Music</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="../../data.js?v=3"></script>
+</head>
+
+<body>
+    <div class="window-content-area">
+        <!-- Main Player Window -->
+        <div class="player-window">
+            <!-- Title Bar -->
+            <div class="title-bar">
+                <div class="title-left">
+                    <span class="title-icon">🎵</span>
+                    <span class="title-text">Media_Player.exe</span>
+                </div>
+                <div class="title-buttons">
+                    <button class="win-btn">_</button>
+                    <button class="win-btn">□</button>
+                    <button class="win-btn close">×</button>
+                </div>
+            </div>
+
+            <!-- Menu Bar -->
+            <div class="menu-bar">
+                <span class="menu-item">File</span>
+                <span class="menu-item">View</span>
+                <span class="menu-item">Playback</span>
+                <span class="menu-item">Help</span>
+            </div>
+
+            <!-- Main Content -->
+            <div class="player-body">
+                <!-- Left Panel - Playlist -->
+                <div class="playlist-panel">
+                    <div class="panel-header">📋 Playlist</div>
+                    <div class="playlist-list" id="playlistContainer">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Right Panel - Now Playing -->
+                <div class="now-playing-panel">
+                    <!-- Album Art / CD Display -->
+                    <div class="album-art-area">
+                        <div class="cd-case" id="cdCase">
+                            <div class="cd-front-cover" id="cdFrontCover"></div>
+                            <div class="cd-disc" id="cdDisc">
+                                <div class="cd-cover" id="cdCover"></div>
+                                <div class="cd-hole"></div>
+                                <div class="cd-ring"></div>
+                                <div class="cd-label" id="cdLabel">LOVE</div>
+                            </div>
+                        </div>
+                        <div class="visualizer" id="visualizer">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+
+                    <!-- Song Info -->
+                    <div class="song-info-box">
+                        <div class="song-name" id="songTitle">Select a song</div>
+                        <div class="song-artist" id="songArtist">-</div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-section">
+                        <div class="time-display">
+                            <span id="currentTime">0:00</span>
+                            <span id="totalTime">0:00</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" id="progressFill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Control Buttons -->
+                    <div class="controls-area">
+                        <button class="ctrl-btn" id="prevBtn" title="Previous">⏮</button>
+                        <button class="ctrl-btn play-btn" id="playBtn" title="Play/Pause">▶</button>
+                        <button class="ctrl-btn" id="nextBtn" title="Next">⏭</button>
+                    </div>
+
+                    <!-- Extra Controls -->
+                    <div class="extra-controls">
+                        <button class="extra-btn" title="Shuffle">🔀</button>
+                        <button class="extra-btn" title="Repeat">🔁</button>
+                        <div class="volume-control">
+                            <span>🔊</span>
+                            <div class="volume-slider">
+                                <div class="volume-level"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <span id="statusText">Ready</span>
+                <span id="trackNum">Track 0 of 0</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-area">
+            <button class="nav-btn" id="backBtn">&lt; Back</button>
+            <button class="nav-btn primary" id="nextBtnNav">Continue &gt;</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

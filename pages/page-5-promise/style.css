@@ -1,0 +1,445 @@
+/* Windows 98 Style Promise Page - Windowed Version */
+
+:root {
+    --win-teal: #008080;
+    --win-blue: #000080;
+    --win-blue-light: #1084d0;
+    --win-gray: #c0c0c0;
+    --win-gray-light: #dfdfdf;
+    --win-gray-dark: #808080;
+    --win-black: #000000;
+    --win-white: #ffffff;
+    --win-gold: #c9a227;
+    --win-red: #c41e3a;
+    --border-light: #ffffff;
+    --border-highlight: #dfdfdf;
+    --border-shadow: #808080;
+    --border-dark: #404040;
+    --title-bar-start: #000080;
+    --title-bar-end: #1084d0;
+    --window-bg: #c0c0c0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    image-rendering: pixelated;
+}
+
+html, body {
+    font-family: 'Pixelify Sans', 'MS Sans Serif', sans-serif;
+    background: var(--win-gray);
+    min-height: 100%;
+    height: auto;
+    font-size: 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Window Content Area */
+.window-content-area {
+    padding: 12px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* Panel */
+.panel {
+    background: var(--window-bg);
+    border: 2px outset var(--border-light);
+    margin-bottom: 12px;
+}
+
+.panel-header {
+    background: linear-gradient(90deg, var(--win-blue) 0%, var(--win-blue-light) 100%);
+    color: var(--win-white);
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 2px solid var(--border-dark);
+}
+
+.pixel-icon {
+    font-size: 12px;
+}
+
+.panel-content {
+    padding: 16px;
+}
+
+.panel-content.compact {
+    padding: 12px;
+    text-align: center;
+}
+
+.panel-content.center {
+    text-align: center;
+}
+
+.page-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--win-blue);
+    margin-bottom: 4px;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+}
+
+.page-subtitle {
+    font-size: 11px;
+    color: var(--win-gray-dark);
+}
+
+/* Letter Content Area */
+.letter-content-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Letter Wrapper */
+.letter-wrapper {
+    position: relative;
+    width: 240px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Envelope */
+.envelope {
+    position: relative;
+    width: 200px;
+    height: 120px;
+    cursor: pointer;
+    z-index: 2;
+    transition: opacity 0.5s ease;
+}
+
+.envelope.open {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.envelope-body {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(180deg, #c9a86c 0%, #b8956a 100%);
+    border: 2px outset #d4b87a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.envelope-flap {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(180deg, #d4b87a 0%, #c9a86c 100%);
+    border: 2px outset #d4b87a;
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+    transform-origin: top;
+    transition: transform 0.5s ease;
+    z-index: 3;
+}
+
+.envelope.open .envelope-flap {
+    transform: rotateX(180deg);
+    z-index: 0;
+}
+
+.wax-seal {
+    width: 40px;
+    height: 40px;
+    background: var(--win-red);
+    border: 2px outset #d04050;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    z-index: 2;
+    position: relative;
+}
+
+/* Letter Page */
+.letter-page {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    width: 260px;
+    max-height: 300px;
+    background: #fffef8;
+    border: 1px solid #d0d0d0;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    overflow-y: auto;
+    box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.5s ease;
+    z-index: 1;
+}
+
+.envelope.open ~ .letter-page,
+.letter-page.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -60%) scale(1);
+}
+
+.letter-date {
+    font-size: 10px;
+    color: var(--win-gray-dark);
+    text-align: right;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.letter-body {
+    font-family: 'Pixelify Sans', cursive;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #4a4035;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+}
+
+.letter-signature {
+    font-family: 'Pixelify Sans', cursive;
+    font-size: 16px;
+    color: var(--win-red);
+    margin-bottom: 8px;
+    text-align: right;
+}
+
+.letter-initials {
+    font-size: 11px;
+    color: var(--win-gray-dark);
+    text-align: right;
+    letter-spacing: 2px;
+}
+
+.envelope-hint {
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--win-gray-dark);
+    text-align: center;
+    animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Promises List */
+.promises-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.promise-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--win-gray-light);
+    border: 2px outset var(--border-light);
+}
+
+.promise-check {
+    width: 20px;
+    height: 20px;
+    background: var(--win-white);
+    border: 2px inset var(--border-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--win-blue);
+}
+
+.promise-text {
+    font-size: 13px;
+    color: var(--win-black);
+}
+
+/* End LDR Card */
+.end-ldr-card {
+    background: var(--win-gray-light);
+    border: 2px outset var(--border-light);
+    padding: 24px 20px;
+    display: inline-block;
+    min-width: 200px;
+}
+
+.end-icon {
+    font-size: 36px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.end-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--win-blue);
+    margin-bottom: 16px;
+}
+
+.end-countdown {
+    margin-bottom: 12px;
+}
+
+.end-countdown span {
+    font-family: 'VT323', monospace;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--win-blue);
+    display: block;
+    line-height: 1;
+}
+
+.end-countdown label {
+    font-size: 11px;
+    color: var(--win-gray-dark);
+    text-transform: uppercase;
+}
+
+.end-date {
+    font-size: 12px;
+    color: var(--win-gray-dark);
+}
+
+/* Finale Panel */
+.finale-panel {
+    background: linear-gradient(180deg, #e8e0d8 0%, #d8d0c8 100%);
+}
+
+.finale-content {
+    padding: 32px 20px;
+}
+
+.pixel-heart {
+    font-size: 56px;
+    color: var(--win-red);
+    display: block;
+    margin-bottom: 16px;
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.finale-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--win-black);
+    margin-bottom: 8px;
+}
+
+.finale-subtext {
+    font-size: 13px;
+    color: var(--win-gray-dark);
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.finale-btn {
+    margin: 0 auto;
+}
+
+/* Button Row */
+.button-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* Windows 98 Button */
+.win98-button {
+    padding: 6px 16px;
+    background: var(--window-bg);
+    border: 2px outset var(--border-light);
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    min-width: 80px;
+}
+
+.win98-button:active {
+    border-style: inset;
+    padding: 7px 15px 5px 17px;
+}
+
+.win98-button.primary {
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.win98-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.button-text {
+    display: block;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .window-content-area {
+        padding: 8px;
+    }
+    
+    .letter-wrapper {
+        width: 200px;
+        height: 140px;
+    }
+    
+    .envelope {
+        width: 180px;
+        height: 110px;
+    }
+    
+    .letter-page {
+        width: 220px;
+        max-height: 250px;
+        padding: 16px;
+    }
+    
+    .letter-body {
+        font-size: 12px;
+    }
+    
+    .end-ldr-card {
+        padding: 16px;
+        min-width: 160px;
+    }
+    
+    .pixel-heart {
+        font-size: 42px;
+    }
+}
+
+/* Selection */
+::selection {
+    background: var(--win-blue);
+    color: var(--win-white);
+}

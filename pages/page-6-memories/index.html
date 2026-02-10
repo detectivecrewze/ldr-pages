@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memories Gallery - Long Distance Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="../../data.js?v=3"></script>
+</head>
+<body>
+    <div class="window-content-area">
+        <!-- Header Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="pixel-icon">📷</span>
+                <span>Memory Gallery</span>
+            </div>
+            <div class="panel-content compact">
+                <div class="page-title">Our Precious Moments</div>
+                <div class="page-subtitle">Every photo holds a thousand words</div>
+            </div>
+        </div>
+
+        <!-- Photo Counter -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-number" id="photoCount">0</span>
+                <span class="stat-label">Photos</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="memoryCount">0</span>
+                <span class="stat-label">Memories</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="daysCount">0</span>
+                <span class="stat-label">Days Together</span>
+            </div>
+        </div>
+
+        <!-- Polaroid Gallery Grid -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="pixel-icon">🖼</span>
+                <span>Captured Moments</span>
+            </div>
+            <div class="panel-content">
+                <div class="polaroid-grid" id="polaroidGrid">
+                    <!-- Polaroids populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory Timeline -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="pixel-icon">📅</span>
+                <span>Memory Timeline</span>
+            </div>
+            <div class="panel-content">
+                <div class="memory-timeline" id="memoryTimeline">
+                    <!-- Timeline items populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="button-row">
+            <button class="win98-button" id="backButton">
+                <span class="button-text">← Back</span>
+            </button>
+            <button class="win98-button primary" id="finishButton">
+                <span class="button-text">Next →</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightboxClose">×</button>
+            <div class="lightbox-image-container">
+                <img src="" alt="Memory" id="lightboxImage">
+            </div>
+            <div class="lightbox-info">
+                <h3 id="lightboxCaption"></h3>
+                <p id="lightboxDate"></p>
+                <p id="lightboxNote"></p>
+            </div>
+            <div class="lightbox-nav">
+                <button class="nav-btn" id="prevPhoto">← Prev</button>
+                <span id="photoCounter">1 / 5</span>
+                <button class="nav-btn" id="nextPhoto">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

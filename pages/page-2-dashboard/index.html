@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard.exe - Relationship Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="../../data.js?v=3"></script>
+</head>
+
+<body>
+    <div class="hub-container">
+        <!-- Main Window -->
+        <div class="hub-window">
+            <!-- Title Bar -->
+            <div class="hub-titlebar">
+                <div class="title-left">
+                    <span class="title-icon">💕</span>
+                    <span class="title-text">Dashboard.exe - Relationship Hub</span>
+                </div>
+                <div class="title-buttons">
+                    <button class="win-btn">_</button>
+                    <button class="win-btn">□</button>
+                    <button class="win-btn close">×</button>
+                </div>
+            </div>
+
+            <!-- Hub Body -->
+            <div class="hub-body">
+                <!-- Left Sidebar - Couple Profiles -->
+                <aside class="hub-sidebar">
+                    <!-- Partner 1 -->
+                    <div class="profile-card">
+                        <div class="profile-avatar" id="avatar1">
+                            <span class="avatar-icon">👤</span>
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-name" id="name1">You</div>
+                            <div class="profile-location" id="loc1">📍 Loading...</div>
+                            <div class="profile-time" id="time1">--:--</div>
+                            <div class="mood-badge" id="mood1">
+                                <span class="mood-emoji" id="moodEmoji1">😊</span>
+                                <span class="mood-text" id="moodText1">Happy</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Love Divider -->
+                    <div class="love-divider">
+                        <span class="heart-icon">💗</span>
+                        <div class="distance-line"></div>
+                        <span class="distance-text" id="distanceKm">0 km</span>
+                    </div>
+
+                    <!-- Partner 2 -->
+                    <div class="profile-card">
+                        <div class="profile-avatar" id="avatar2">
+                            <span class="avatar-icon">👤</span>
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-name" id="name2">Them</div>
+                            <div class="profile-location" id="loc2">📍 Loading...</div>
+                            <div class="profile-time" id="time2">--:--</div>
+                            <div class="mood-badge" id="mood2">
+                                <span class="mood-emoji" id="moodEmoji2">💻</span>
+                                <span class="mood-text" id="moodText2">Working</span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Main Content - Giant Countdown -->
+                <main class="hub-main">
+                    <div class="countdown-container">
+                        <div class="countdown-label">⏰ TIME UNTIL WE MEET</div>
+
+                        <div class="countdown-display">
+                            <div class="time-unit">
+                                <span class="time-value" id="days">00</span>
+                                <span class="time-label">DAYS</span>
+                            </div>
+                            <span class="time-separator">:</span>
+                            <div class="time-unit">
+                                <span class="time-value" id="hours">00</span>
+                                <span class="time-label">HOURS</span>
+                            </div>
+                            <span class="time-separator">:</span>
+                            <div class="time-unit">
+                                <span class="time-value" id="minutes">00</span>
+                                <span class="time-label">MINUTES</span>
+                            </div>
+                            <span class="time-separator">:</span>
+                            <div class="time-unit">
+                                <span class="time-value" id="seconds">00</span>
+                                <span class="time-label">SECONDS</span>
+                            </div>
+                        </div>
+
+                        <div class="reunion-date" id="reunionDate">
+                            Target: Loading...
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-label">Journey Progress</div>
+                            <div class="progress-track">
+                                <div class="progress-fill" id="journeyProgress"></div>
+                            </div>
+                            <div class="progress-percent" id="progressPercent">0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Motivational Quote -->
+                    <div class="quote-box" id="quoteBox">
+                        "Distance means so little when someone means so much"
+                    </div>
+                </main>
+            </div>
+
+            <!-- Bottom Status Bar -->
+            <div class="hub-statusbar">
+                <div class="stat-item">
+                    <span class="stat-icon">📅</span>
+                    <span class="stat-label">Together for</span>
+                    <span class="stat-value" id="daysTogether">0 days</span>
+                </div>
+                <div class="stat-divider">|</div>
+                <div class="stat-item">
+                    <span class="stat-icon">📞</span>
+                    <span class="stat-label">Call hours</span>
+                    <span class="stat-value" id="callHours">0 hrs</span>
+                </div>
+                <div class="stat-divider">|</div>
+                <div class="stat-item">
+                    <span class="stat-icon">✈️</span>
+                    <span class="stat-label">Distance</span>
+                    <span class="stat-value" id="distanceStat">0 km</span>
+                </div>
+                <div class="stat-divider">|</div>
+                <div class="stat-item">
+                    <span class="stat-icon">💬</span>
+                    <span class="stat-label">Messages</span>
+                    <span class="stat-value" id="messages">0</span>
+                </div>
+                <div class="stat-spacer"></div>
+                <div class="stat-item time-sync">
+                    <span class="stat-icon">🕐</span>
+                    <span class="stat-value" id="syncTime">--:--:--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-area">
+            <button class="nav-btn" id="backBtn">&lt; Back</button>
+            <button class="nav-btn primary" id="nextBtn">Continue &gt;</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

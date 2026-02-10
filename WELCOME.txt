@@ -1,0 +1,19 @@
+💖 WELCOME TO THE LONG DISTANCE LOVE ADMINISTRATOR 💖
+
+You now have a powerful set of tools to create a personalized digital experience for your loved one.
+
+This project folder contains everything you need to build a custom romantic website:
+- /admin: The interactive dashboard to configure your site.
+- /pages: The various interactive experiences (Map, Playlist, Letter, etc.).
+- /data.js: The heart of your site where all your settings are stored.
+
+HOW TO START:
+1. Open 'admin/index.html' in your browser.
+2. Personalize your apps, photos, and messages.
+3. Download your 'data.js' and save it here.
+
+For a full walkthrough, please read the 'ADMIN_GUIDE.md' file included in this directory.
+
+Happy Creating!
+---
+The Valentine Claude Team

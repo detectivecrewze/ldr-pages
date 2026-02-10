@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Promise - Long Distance Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="../../data.js?v=3"></script>
+</head>
+<body>
+    <div class="window-content-area">
+        <!-- Header Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="pixel-icon">💌</span>
+                <span>The Promise</span>
+            </div>
+            <div class="panel-content compact">
+                <div class="page-title">The Promise</div>
+                <div class="page-subtitle">A vow that distance cannot break</div>
+            </div>
+        </div>
+
+        <!-- Letter Section -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="pixel-icon">📜</span>
+                <span>A Letter From the Heart</span>
+            </div>
+            <div class="panel-content letter-content-area">
+                <div class="letter-wrapper" id="letterWrapper">
+                    <div class="envelope" id="envelope">
+                        <div class="envelope-flap"></div>
+                        <div class="envelope-body">
+                            <div class="wax-seal">❤</div>
+                        </div>
+                    </div>
+                    <div class="letter-page" id="letterPage">
+                        <div class="letter-date" id="letterDate"></div>
+                        <div class="letter-body" id="letterBody"></div>
+                        <div class="letter-signature" id="letterSignature"></div>
+                        <div class="letter-initials" id="letterInitials"></div>
+                    </div>
+                </div>
+                <p class="envelope-hint" id="envelopeHint">Click the envelope to open</p>
+            </div>
+        </div>
+
+        <!-- Promises Section -->
+        <div class="panel" id="promisesPanel" style="display: none;">
+            <div class="panel-header">
+                <span class="pixel-icon">✓</span>
+                <span>Our Promises</span>
+            </div>
+            <div class="panel-content">
+                <div class="promises-list" id="promisesList">
+                    <!-- Promises populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Countdown to End of LDR -->
+        <div class="panel" id="endLDRPanel" style="display: none;">
+            <div class="panel-header">
+                <span class="pixel-icon">🏠</span>
+                <span>No More Distance</span>
+            </div>
+            <div class="panel-content center">
+                <div class="end-ldr-card">
+                    <span class="end-icon">🏠</span>
+                    <h3 class="end-title">Together Again</h3>
+                    <div class="end-countdown" id="endCountdown">
+                        <span id="endDays">0</span>
+                        <label>Days Remaining</label>
+                    </div>
+                    <p class="end-date" id="endDate"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finale Section -->
+        <div class="panel finale-panel" id="finalePanel" style="display: none;">
+            <div class="panel-content center">
+                <div class="finale-content">
+                    <div class="pixel-heart">♥</div>
+                    <h2 class="finale-text">Until we meet again</h2>
+                    <p class="finale-subtext">And every day after that</p>
+                    <button class="win98-button primary finale-btn" id="closeButton">
+                        <span class="button-text">Close</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons (shown initially) -->
+        <div class="button-row" id="navButtons">
+            <button class="win98-button" id="backButton">
+                <span class="button-text">&lt; Back</span>
+            </button>
+            <button class="win98-button primary" id="nextButton" disabled>
+                <span class="button-text">Continue &gt;</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

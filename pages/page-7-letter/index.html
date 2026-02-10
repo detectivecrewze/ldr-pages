@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C:\ROMANCE\LETTER.TXT</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="../../data.js?v=3"></script>
+</head>
+<body>
+    <div class="cmd-window">
+        <!-- Command Prompt Title Bar -->
+        <div class="cmd-title-bar">
+            <div class="cmd-title">
+                <span class="cmd-icon">C:\</span>
+                <span>Command Prompt - LETTER.TXT</span>
+            </div>
+            <div class="cmd-controls">
+                <button class="cmd-btn minimize">_</button>
+                <button class="cmd-btn maximize">□</button>
+                <button class="cmd-btn close" id="closeBtn">×</button>
+            </div>
+        </div>
+
+        <!-- Command Prompt Content -->
+        <div class="cmd-content">
+            <!-- Header info -->
+            <div class="cmd-header">
+                <p>Microsoft(R) Windows 98</p>
+                <p>(C)Copyright Microsoft Corp 1981-1998.</p>
+                <br>
+                <p>C:\Documents and Settings\Heart> <span class="typing-cmd">type letter.txt</span></p>
+                <br>
+            </div>
+
+            <!-- The Letter Content -->
+            <div class="letter-container">
+                <pre id="letterText" class="letter-text"></pre>
+                <span class="cursor" id="cursor">█</span>
+            </div>
+
+            <!-- Completion message -->
+            <div class="cmd-footer" id="cmdFooter" style="display: none;">
+                <br>
+                <p>C:\Documents and Settings\Heart> <span class="blink">_</span></p>
+                <br>
+                <p class="continue-hint">[Press ENTER to continue...]</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden button for navigation -->
+    <button id="finishBtn" style="display: none;"></button>
+
+    <script src="script.js"></script>
+</body>
+</html>

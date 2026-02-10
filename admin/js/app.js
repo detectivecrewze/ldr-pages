@@ -664,8 +664,8 @@ const app = {
                 id = `${timestamp}-${randomStr}`;
             }
 
-            // Adjust this URL to your GitHub Pages URL
-            const siteUrl = `https://detectivecrewze.github.io/ldr-pages/?to=${encodeURIComponent(id)}`;
+            // Adjust this URL to your Vercel URL
+            const siteUrl = `https://ldr-pages.vercel.app/?to=${encodeURIComponent(id)}`;
 
             const response = await fetch('https://valentine-upload.aldoramadhan16.workers.dev/save-config?id=' + encodeURIComponent(id), {
                 method: 'POST',

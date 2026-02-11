@@ -293,30 +293,31 @@ function setupEventListeners() {
 
     elements.videoPlayer.addEventListener('loadedmetadata', () => {
         const duration = elements.videoPlayer.duration;
+        if (!duration || isNaN(duration)) return;
+
         const mins = Math.floor(duration / 60);
         const secs = Math.floor(duration % 60);
-        const durationStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+        const actualDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
 
-        elements.totalTime.textContent = durationStr;
-
-        // Always use the actual metadata duration for display
-        const currentMins = Math.floor(elements.videoPlayer.duration / 60);
-        const currentSecs = Math.floor(elements.videoPlayer.duration % 60);
-        const actualDuration = `${currentMins}:${currentSecs.toString().padStart(2, '0')}`;
+        console.log('[Video] Metadata loaded. Actual duration:', actualDuration);
 
         if (state.currentIndex !== -1) {
-            console.log('[Video] Updating duration from metadata:', actualDuration);
+            // Update the duration in our state
             state.videos[state.currentIndex].duration = actualDuration;
-            // Force update the UI
-            renderPlaylist();
-            elements.totalTime.textContent = actualDuration;
-        }
 
-        // Update video dimensions if needed
-        if (elements.videoDimensions) {
-            elements.videoDimensions.textContent = `${elements.videoPlayer.videoWidth}x${elements.videoPlayer.videoHeight}`;
+            // Update the UI elements
+            elements.totalTime.textContent = actualDuration;
+            elements.infoDetails.textContent = `${state.videos[state.currentIndex].description} • ${actualDuration}`;
+
+            // Re-render playlist to show correct duration in the list
+            renderPlaylist();
         }
     });
+
+    // Update video dimensions if needed
+    if (elements.videoDimensions) {
+        elements.videoDimensions.textContent = `${elements.videoPlayer.videoWidth}x${elements.videoPlayer.videoHeight}`;
+    }
 
     elements.videoPlayer.addEventListener('timeupdate', () => {
         const percent = (elements.videoPlayer.currentTime / elements.videoPlayer.duration) * 100;

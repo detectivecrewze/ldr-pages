@@ -826,9 +826,14 @@
                 const app = this.apps.find(a => a.id === appId);
                 if (!app) return;
 
-                // Auto-start background music after login on first interaction with content apps
-                if (window.audioState && window.audioState.currentSongIndex === -1 && appId !== 'login') {
+                // Auto-start background music ONLY when opening the Media Player
+                if (appId === 'shared' && window.audioState && window.audioState.currentSongIndex === -1) {
                     this.tryStartMusic();
+                } else if (appId === 'shared' && window.bgAudio && window.bgAudio.paused) {
+                    window.bgAudio.play().catch(e => console.log('[Desktop] Music resume failed:', e));
+                } else if (appId !== 'shared' && window.bgAudio && !window.bgAudio.paused) {
+                    // Pause music when entering any other app
+                    window.bgAudio.pause();
                 }
 
                 // Check if unlocked
@@ -908,21 +913,16 @@
                     this.removeFromTaskbar(this.currentApp.id);
                 }
 
-                // Unmute and auto-play music if closing video vault
+                // Pause music when closing Media Player
+                if (this.currentApp && this.currentApp.id === 'shared') {
+                    if (window.bgAudio) window.bgAudio.pause();
+                }
+
+                // Unmute music if closing video vault - ONLY if we are returning to Media Player (which isn't really possible in this windowed setup)
+                // Actually, the user wants music ONLY on shared page, so if we close video, we don't auto-play music unless shared is somehow the "background".
+                // In this desktop, only one app is "active" in the window.
                 if (this.currentApp && this.currentApp.id === 'video') {
-                    if (window.bgAudio) {
-                        window.bgAudio.muted = false;
-                        // If no song has ever played, try to start first one
-                        if (window.audioState && window.audioState.currentSongIndex === -1) {
-                            this.tryStartMusic();
-                        } else {
-                            // Otherwise just resume whatever was there
-                            window.bgAudio.play().catch(e => console.log('[Desktop] Music resume failed:', e));
-                            if (window.audioState) window.audioState.isPlaying = true;
-                        }
-                    }
-                    const trayVolume = document.getElementById('trayVolume');
-                    if (trayVolume) trayVolume.textContent = '🔊';
+                    if (window.bgAudio) window.bgAudio.muted = false;
                 }
 
                 this.currentApp = null;
@@ -936,6 +936,11 @@
                 if (this.currentApp) {
                     const btn = document.getElementById(`tb-${this.currentApp.id}`);
                     if (btn) btn.classList.add('minimized');
+
+                    // Pause music if minimizing Media Player
+                    if (this.currentApp.id === 'shared' && window.bgAudio) {
+                        window.bgAudio.pause();
+                    }
                 }
             },
 
@@ -947,6 +952,11 @@
                 if (this.currentApp) {
                     const btn = document.getElementById(`tb-${this.currentApp.id}`);
                     if (btn) btn.classList.remove('minimized');
+
+                    // Resume music if restoring Media Player
+                    if (this.currentApp.id === 'shared' && window.bgAudio) {
+                        window.bgAudio.play().catch(e => console.log('[Desktop] Music resume failed:', e));
+                    }
                 }
             },
 
@@ -1207,12 +1217,14 @@
                                 window.bgAudio.muted = false;
                                 if (trayVolume) trayVolume.textContent = '🔊';
 
-                                // Auto-play music when video stops
-                                if (window.audioState && window.audioState.currentSongIndex === -1) {
-                                    this.tryStartMusic();
-                                } else {
-                                    window.bgAudio.play().catch(e => console.log('[Desktop] Music auto-play failed:', e));
-                                    if (window.audioState) window.audioState.isPlaying = true;
+                                // Auto-play music ONLY if we are currently in the Media Player app
+                                if (this.currentApp && this.currentApp.id === 'shared') {
+                                    if (window.audioState && window.audioState.currentSongIndex === -1) {
+                                        this.tryStartMusic();
+                                    } else {
+                                        window.bgAudio.play().catch(e => console.log('[Desktop] Music auto-play failed:', e));
+                                        if (window.audioState) window.audioState.isPlaying = true;
+                                    }
                                 }
                             }
                         }

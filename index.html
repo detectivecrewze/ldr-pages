@@ -612,31 +612,25 @@
                     path: 'pages/page-6-memories/index.html',
                     description: 'Our precious moments'
                 },
-                {
-                    id: 'video',
-                    name: 'Video_Vault.exe',
-                    icon: '📹',
-                    path: 'pages/page-12-video/index.html',
-                    description: 'Our video memories'
-                },
+
                 {
                     id: 'messenger',
                     name: 'Love_Messenger.exe',
-                    icon: '💬',
+                    icon: '�',
                     path: 'pages/page-8-messenger/index.html',
                     description: 'Our chat history'
                 },
                 {
                     id: 'sweeper',
                     name: 'Heart_Sweeper.exe',
-                    icon: '💣',
+                    icon: '�',
                     path: 'pages/page-9-sweeper/index.html',
                     description: 'Find the hearts!'
                 },
                 {
                     id: 'bucketlist',
                     name: 'Our_Bucket_List.txt',
-                    icon: '📋',
+                    icon: '�',
                     path: 'pages/page-10-bucketlist/index.html',
                     description: 'Future dreams together'
                 },
@@ -646,6 +640,13 @@
                     icon: '❓',
                     path: 'pages/page-11-quiz/index.html',
                     description: 'Test our compatibility'
+                },
+                {
+                    id: 'video',
+                    name: 'Video_Vault.exe',
+                    icon: '📹',
+                    path: 'pages/page-12-video/index.html',
+                    description: 'Our video memories'
                 },
                 {
                     id: 'letter',
@@ -668,7 +669,10 @@
                 // Load unlocked index from localStorage
                 const savedIndex = localStorage.getItem('ldr_unlocked_index');
                 if (savedIndex !== null) {
-                    this.unlockedIndex = parseInt(savedIndex);
+                    const idx = parseInt(savedIndex);
+                    // If they've unlocked more than just the login app (index 0), unlock EVERYTHING
+                    // This ensures returning users have full access immediately
+                    this.unlockedIndex = idx > 0 ? 999 : 0;
                 } else {
                     this.unlockedIndex = 0;
                 }
@@ -840,16 +844,11 @@
                 }
 
                 // Check if unlocked
+                // Only Login.exe (usually index 0) is accessible before login
                 const appIndex = this.apps.findIndex(a => a.id === appId);
 
-                if (force) {
-                    // If forced (via Admin Preview), ensure this app and previous are unlocked
-                    if (appIndex > this.unlockedIndex) {
-                        this.unlockedIndex = appIndex;
-                        this.updateUnlockedApps();
-                        localStorage.setItem('ldr_unlocked_index', this.unlockedIndex);
-                    }
-                } else if (appIndex > this.unlockedIndex) {
+                // If not forced and trying to open something other than login while locked
+                if (!force && appId !== 'login' && this.unlockedIndex === 0) {
                     this.showError('This application is locked. Please enter the correct password in Login.exe first.');
                     return;
                 }
@@ -987,56 +986,26 @@
             completeApp(appId, nextAppId) {
                 console.log('completeApp called:', appId, nextAppId);
 
-                // Get the index of the app that was just completed
-                const completedIndex = this.apps.findIndex(a => a.id === appId);
-                console.log('Completed index:', completedIndex, 'Current unlockedIndex:', this.unlockedIndex);
+                // If login is completed, unlock EVERYTHING immediately
+                if (appId === 'login') {
+                    console.log('[Desktop] Login complete. Unlocking all apps.');
+                    this.unlockedIndex = 999; // Set to high value to unlock all
+                    localStorage.setItem('ldr_unlocked_index', 999);
+                    this.updateUnlockedApps();
 
-                // Strategy: If a specific nextAppId is requested, we MUST ensure it is unlocked
-                if (nextAppId) {
-                    const nextIndex = this.apps.findIndex(a => a.id === nextAppId);
-                    if (nextIndex !== -1 && nextIndex > this.unlockedIndex) {
-                        console.log('Specifically requested app', nextAppId, 'is ahead. Unlocking up to index:', nextIndex);
-                        this.unlockedIndex = nextIndex;
-                        localStorage.setItem('ldr_unlocked_index', this.unlockedIndex);
-                        this.updateUnlockedApps();
-                    }
-                }
-                // Fallback: Just increment if we completed the current furthest app
-                else if (completedIndex !== -1 && completedIndex === this.unlockedIndex) {
-                    if (this.unlockedIndex < this.apps.length - 1) {
-                        this.unlockedIndex++;
-                        console.log('Unlocked next available app, index now:', this.unlockedIndex);
-                        localStorage.setItem('ldr_unlocked_index', this.unlockedIndex);
-                        this.updateUnlockedApps();
-                    }
+                    // Close the login window
+                    this.closeApp();
+                    return;
                 }
 
-                // If the app is still the current active one, close it
+                // For any other app, just close it when "Done" or "Next" is clicked
+                // This allows the user to navigate freely instead of being forced into the next one
                 if (this.currentApp && this.currentApp.id === appId) {
-                    // Close the window manually to avoid recursive loops with closeApp()
-                    const window = document.getElementById('appWindow');
-                    const iframe = document.getElementById('windowIframe');
-                    window.classList.remove('active');
-                    iframe.src = '';
-                    if (this.currentApp) this.removeFromTaskbar(this.currentApp.id);
-                    this.currentApp = null;
+                    this.closeApp();
                 }
 
-                // Determine which ID to auto-open
-                let nextId = nextAppId;
-                if (!nextId && completedIndex !== -1) {
-                    // If no specific nextId, just take the next one in the current filtered list if unlocked
-                    if (completedIndex + 1 <= this.unlockedIndex) {
-                        nextId = this.apps[completedIndex + 1]?.id;
-                    }
-                }
-
-                if (nextId && nextId !== appId) {
-                    console.log('Auto-opening nextId:', nextId);
-                    setTimeout(() => {
-                        this.openApp(nextId);
-                    }, 500);
-                }
+                // Note: We've removed the auto-opening logic (nextAppId/nextId) 
+                // to allow the user to choose their own path as requested.
             },
 
             toggleStartMenu() {

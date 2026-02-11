@@ -467,8 +467,7 @@ const JourneyMapPage = {
         document.getElementById('nextButton').addEventListener('click', () => {
             window.parent.postMessage({
                 type: 'APP_COMPLETE',
-                appId: 'journey',
-                nextApp: 'memories'
+                appId: 'journey'
             }, '*');
         });
 

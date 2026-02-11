@@ -376,8 +376,7 @@ btnNext.addEventListener('click', () => {
             // Complete - notify parent
             window.parent.postMessage({
                 type: 'APP_COMPLETE',
-                appId: 'quiz',
-                nextApp: 'letter'
+                appId: 'quiz'
             }, '*');
             break;
     }

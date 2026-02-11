@@ -371,25 +371,14 @@ function setupEventListeners() {
         elements.videoDimensions.textContent = `${elements.videoPlayer.videoWidth}x${elements.videoPlayer.videoHeight}`;
     }
 
-    elements.videoPlayer.addEventListener('timeupdate', () => {
-        // Fallback: If duration wasn't detected earlier, detect it now!
-        if (state.currentIndex !== -1 && elements.videoPlayer.duration && !isNaN(elements.videoPlayer.duration) && elements.videoPlayer.duration !== Infinity) {
-            const currentDurationText = elements.totalTime.textContent;
-            // If current validation is default/wrong (0:01) or different from actual
-            if (currentDurationText === '0:01' || currentDurationText === '0:00') {
-                const duration = elements.videoPlayer.duration;
-                const mins = Math.floor(duration / 60);
-                const secs = Math.floor(duration % 60);
-                const actualDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
+    // Event to catch when the browser realizes the video is longer than initially thought
+    elements.videoPlayer.addEventListener('durationchange', () => {
+        updateDurationFromPlayer();
+    });
 
-                // Update state and UI
-                console.log('[Video] Duration lazy-updated during playback:', actualDuration);
-                state.videos[state.currentIndex].duration = actualDuration;
-                elements.totalTime.textContent = actualDuration;
-                elements.infoDetails.textContent = `${state.videos[state.currentIndex].description} • ${actualDuration}`;
-                renderPlaylist();
-            }
-        }
+    elements.videoPlayer.addEventListener('timeupdate', () => {
+        // Continuous check: if the player knows a better duration than what we're showing, update it!
+        updateDurationFromPlayer();
 
         const percent = (elements.videoPlayer.currentTime / elements.videoPlayer.duration) * 100;
         elements.seekbarFill.style.width = `${percent}%`;
@@ -399,6 +388,27 @@ function setupEventListeners() {
         const secs = Math.floor(elements.videoPlayer.currentTime % 60);
         elements.currentTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
     });
+
+    /**
+     * Helper to grab the real duration from the player and update the UI/State
+     */
+    function updateDurationFromPlayer() {
+        const duration = elements.videoPlayer.duration;
+        if (state.currentIndex !== -1 && duration && !isNaN(duration) && duration !== Infinity && duration > 1) {
+            const mins = Math.floor(duration / 60);
+            const secs = Math.floor(duration % 60);
+            const actualDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+            // If the text is different (e.g., current is 0:05 and actual is 0:45)
+            if (elements.totalTime.textContent !== actualDuration) {
+                console.log(`[Video] Updating duration: ${elements.totalTime.textContent} -> ${actualDuration}`);
+                state.videos[state.currentIndex].duration = actualDuration;
+                elements.totalTime.textContent = actualDuration;
+                elements.infoDetails.textContent = `${state.videos[state.currentIndex].description} • ${actualDuration}`;
+                renderPlaylist();
+            }
+        }
+    }
 
     elements.videoPlayer.addEventListener('ended', () => {
         playNext();

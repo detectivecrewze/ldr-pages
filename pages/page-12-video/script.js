@@ -134,17 +134,27 @@ async function autoDetectDurations() {
                 setTimeout(() => resolve(null), 5000);
             });
 
-            if (duration && !isNaN(duration)) {
+            if (duration && !isNaN(duration) && duration !== Infinity) {
                 const mins = Math.floor(duration / 60);
                 const secs = Math.floor(duration % 60);
                 const actualDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
 
                 console.log(`[Video] Auto-detected duration for "${video.title}": ${actualDuration}`);
                 state.videos[i].duration = actualDuration;
+                // Only update if current is 0:01
+                if (state.videos[i].duration === '0:01' || state.videos[i].duration === '0:00') {
+                    // Update main UI if this is current video
+                    if (i === state.currentIndex) {
+                        elements.totalTime.textContent = actualDuration;
+                        elements.infoDetails.textContent = `${video.description} • ${actualDuration}`;
+                    }
+                }
                 renderPlaylist(); // Update the UI
             }
         } catch (err) {
-            console.warn(`[Video] Failed to detect duration for ${video.title}:`, err);
+            console.warn(`[Video] Failed to detect duration for ${video.title} (CORS?):`, err);
+            // Fallback: Try without crossorigin (might work depending on browser/cache)
+            // But usually this is blocked for privacy. We rely on the timeupdate fallback then.
         }
     }
 }
@@ -335,7 +345,7 @@ function setupEventListeners() {
 
     elements.videoPlayer.addEventListener('loadedmetadata', () => {
         const duration = elements.videoPlayer.duration;
-        if (!duration || isNaN(duration)) return;
+        if (!duration || isNaN(duration) || duration === Infinity) return;
 
         const mins = Math.floor(duration / 60);
         const secs = Math.floor(duration % 60);
@@ -362,6 +372,25 @@ function setupEventListeners() {
     }
 
     elements.videoPlayer.addEventListener('timeupdate', () => {
+        // Fallback: If duration wasn't detected earlier, detect it now!
+        if (state.currentIndex !== -1 && elements.videoPlayer.duration && !isNaN(elements.videoPlayer.duration) && elements.videoPlayer.duration !== Infinity) {
+            const currentDurationText = elements.totalTime.textContent;
+            // If current validation is default/wrong (0:01) or different from actual
+            if (currentDurationText === '0:01' || currentDurationText === '0:00') {
+                const duration = elements.videoPlayer.duration;
+                const mins = Math.floor(duration / 60);
+                const secs = Math.floor(duration % 60);
+                const actualDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+                // Update state and UI
+                console.log('[Video] Duration lazy-updated during playback:', actualDuration);
+                state.videos[state.currentIndex].duration = actualDuration;
+                elements.totalTime.textContent = actualDuration;
+                elements.infoDetails.textContent = `${state.videos[state.currentIndex].description} • ${actualDuration}`;
+                renderPlaylist();
+            }
+        }
+
         const percent = (elements.videoPlayer.currentTime / elements.videoPlayer.duration) * 100;
         elements.seekbarFill.style.width = `${percent}%`;
         elements.seekbarThumb.style.left = `${percent}%`;

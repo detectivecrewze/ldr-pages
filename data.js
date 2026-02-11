@@ -11,7 +11,7 @@ const CONFIG = {
         "relationshipStartDate": "2020-01-17",
         "errorMessage": "That's not our special word... try again!",
         "photoSrc": "",
-        "youLabel": "Al",
+        "youLabel": "Alz",
         "themLabel": "Liz"
     },
     "dashboard": {

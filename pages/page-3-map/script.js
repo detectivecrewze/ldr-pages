@@ -160,8 +160,16 @@ const JourneyMapPage = {
             // Hide loading AFTER map is created
             document.getElementById('mapLoading').classList.add('hidden');
 
-            // Start the journey animation
-            this.startJourneyAnimation();
+            // Check if journey has been shown before
+            const alreadyViewed = localStorage.getItem('ldr_journey_viewed') === 'true';
+
+            if (alreadyViewed) {
+                console.log('[Map] Journey already viewed, skipping animation');
+                this.skipJourneyAnimation();
+            } else {
+                // Start the journey animation
+                this.startJourneyAnimation();
+            }
         } catch (error) {
             console.error('[Map] Initialization error:', error);
             // Show error message and hide loading
@@ -172,6 +180,21 @@ const JourneyMapPage = {
             }
             document.getElementById('mapLoading').classList.add('hidden');
         }
+    },
+
+    skipJourneyAnimation() {
+        if (this.pins.length === 0) return;
+
+        this.drawJourneyLine();
+
+        // Add all markers immediately
+        this.pins.forEach((_, index) => {
+            this.addMarker(index);
+        });
+
+        // Show all pins
+        this.showAllPins();
+        this.updateNavigator();
     },
 
     async startJourneyAnimation() {
@@ -213,6 +236,8 @@ const JourneyMapPage = {
         // Show completion popup after a short delay
         setTimeout(() => {
             this.showPopup();
+            // Mark as viewed so it doesn't play again
+            localStorage.setItem('ldr_journey_viewed', 'true');
         }, 1500);
     },
 

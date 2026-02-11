@@ -837,6 +837,12 @@
 
                 this.currentApp = app;
 
+                // Toggle window controls for Login app to prevent bypass
+                const controls = document.querySelector('.window-controls');
+                if (controls) {
+                    controls.style.display = appId === 'login' ? 'none' : 'flex';
+                }
+
                 // Show window
                 const appWin = document.getElementById('appWindow');
                 const iframe = document.getElementById('windowIframe');
@@ -1149,6 +1155,10 @@
                         this.completeApp(e.data.appId || this.currentApp?.id, e.data.nextApp);
                     }
                     if (e.data?.type === 'NAVIGATE' && e.data.direction === 'close') {
+                        // Prevent closing Login app to avoid bypass
+                        if (this.currentApp && this.currentApp.id === 'login') {
+                            return;
+                        }
                         // Just close the window without unlocking next
                         this.closeApp();
                     }

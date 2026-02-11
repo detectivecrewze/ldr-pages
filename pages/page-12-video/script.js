@@ -169,6 +169,11 @@ function playVideo(index) {
 
     updatePlayPauseButtons();
     renderPlaylist();
+
+    // Notify parent to mute background music
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'VIDEO_EVENT', action: 'playing' }, '*');
+    }
 }
 
 // Pause video
@@ -179,6 +184,11 @@ function pauseVideo() {
     elements.videoPlayer.pause();
     updatePlayPauseButtons();
     renderPlaylist();
+
+    // Notify parent to resume background music
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'VIDEO_EVENT', action: 'stopped' }, '*');
+    }
 }
 
 // Resume video
@@ -194,6 +204,11 @@ function resumeVideo() {
     elements.videoPlayer.play();
     updatePlayPauseButtons();
     renderPlaylist();
+
+    // Notify parent to mute background music
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'VIDEO_EVENT', action: 'playing' }, '*');
+    }
 }
 
 // Stop video
@@ -216,6 +231,11 @@ function stopVideo() {
 
     updatePlayPauseButtons();
     renderPlaylist();
+
+    // Notify parent to resume background music
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'VIDEO_EVENT', action: 'stopped' }, '*');
+    }
 }
 
 // Play previous
@@ -235,7 +255,9 @@ function playNext() {
 
     let nextIndex = state.currentIndex + 1;
     if (nextIndex >= state.videos.length) {
-        nextIndex = 0;
+        // End of playlist - stop video so background music returns
+        stopVideo();
+        return;
     }
     playVideo(nextIndex);
 }

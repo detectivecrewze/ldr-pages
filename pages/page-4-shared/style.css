@@ -504,6 +504,7 @@ body {
     height: 14px;
     background: var(--w98-white);
     border: 1px inset var(--w98-dark);
+    cursor: pointer;
 }
 
 .volume-level {

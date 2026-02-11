@@ -39,6 +39,10 @@ const elements = {
     cdFrontCover: document.getElementById('cdFrontCover'),
     visualizer: document.getElementById('visualizer'),
 
+    // Volume
+    volumeSlider: document.querySelector('.volume-slider'),
+    volumeLevel: document.querySelector('.volume-level'),
+
     // Containers
     playlistContainer: document.getElementById('playlistContainer')
 };
@@ -72,6 +76,8 @@ function init() {
             }
         }, 500);
     }
+
+    setupVolumeControl();
 }
 
 // Load data from CONFIG
@@ -339,4 +345,47 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
     init();
+}
+
+function setupVolumeControl() {
+    if (!elements.volumeSlider || !state.audio) return;
+
+    // Initial value
+    updateVolumeDisplay(state.audio.volume || 1);
+
+    // Click handler
+    elements.volumeSlider.addEventListener('mousedown', function (e) {
+        setVolumeFromEvent(e);
+
+        // Drag handler
+        function onMouseMove(e) {
+            setVolumeFromEvent(e);
+        }
+
+        function onMouseUp() {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    });
+}
+
+function setVolumeFromEvent(e) {
+    const rect = elements.volumeSlider.getBoundingClientRect();
+    let percent = (e.clientX - rect.left) / rect.width;
+
+    // Clamp
+    percent = Math.max(0, Math.min(1, percent));
+
+    // Set volume
+    state.audio.volume = percent;
+    updateVolumeDisplay(percent);
+}
+
+function updateVolumeDisplay(percent) {
+    if (elements.volumeLevel) {
+        elements.volumeLevel.style.width = (percent * 100) + '%';
+    }
 }

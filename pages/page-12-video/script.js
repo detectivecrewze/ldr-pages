@@ -105,6 +105,48 @@ function loadData() {
     }
 
     elements.playlistCount.textContent = `(${state.videos.length})`;
+
+    // Automatically detect real durations in the background
+    autoDetectDurations();
+}
+
+/**
+ * Automatically fetches metadata for all videos to get their real durations
+ */
+async function autoDetectDurations() {
+    console.log('[Video] Starting background duration detection...');
+
+    for (let i = 0; i < state.videos.length; i++) {
+        const video = state.videos[i];
+        if (!video.url) continue;
+
+        try {
+            const tempVideo = document.createElement('video');
+            tempVideo.preload = 'metadata';
+            tempVideo.src = video.url;
+            tempVideo.crossOrigin = 'anonymous';
+
+            // Create a promise that resolves when metadata is loaded
+            const duration = await new Promise((resolve, reject) => {
+                tempVideo.onloadedmetadata = () => resolve(tempVideo.duration);
+                tempVideo.onerror = () => reject('Error loading metadata');
+                // Timeout after 5 seconds to prevent hanging
+                setTimeout(() => resolve(null), 5000);
+            });
+
+            if (duration && !isNaN(duration)) {
+                const mins = Math.floor(duration / 60);
+                const secs = Math.floor(duration % 60);
+                const actualDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+                console.log(`[Video] Auto-detected duration for "${video.title}": ${actualDuration}`);
+                state.videos[i].duration = actualDuration;
+                renderPlaylist(); // Update the UI
+            }
+        } catch (err) {
+            console.warn(`[Video] Failed to detect duration for ${video.title}:`, err);
+        }
+    }
 }
 
 // Render playlist

@@ -335,11 +335,18 @@ const JourneyMapPage = {
 
     showLocationCard(pin) {
         const card = document.getElementById('locationCard');
+        const img = document.getElementById('cardImage');
 
-        document.getElementById('cardImage').src = pin.photo;
-        document.getElementById('cardTitle').textContent = pin.label;
-        document.getElementById('cardDate').textContent = '📅 ' + pin.date;
-        document.getElementById('cardNote').textContent = pin.note;
+        if (pin.photo) {
+            img.src = pin.photo;
+            img.classList.remove('hidden');
+        } else {
+            img.classList.add('hidden');
+        }
+
+        document.getElementById('cardTitle').textContent = pin.label || 'Untitled Place';
+        document.getElementById('cardDate').textContent = pin.date ? '📅 ' + pin.date : '📅 No date set';
+        document.getElementById('cardNote').textContent = pin.note || 'No notes for this location.';
 
         card.classList.add('active');
     },
@@ -352,17 +359,23 @@ const JourneyMapPage = {
         const list = document.getElementById('pinList');
         if (!list) return;
 
-        list.innerHTML = this.pins.map((pin, index) => `
-            <div class="pin-list-item" data-index="${index}">
-                <span class="pin-list-number">${index + 1}</span>
-                <img src="${pin.photo}" alt="${pin.label}" class="pin-thumb">
-                <div class="pin-list-info">
-                    <div class="pin-list-title">${pin.label}</div>
-                    <div class="pin-list-date">📅 ${pin.date}</div>
-                    <div class="pin-list-note">${pin.note}</div>
+        list.innerHTML = this.pins.map((pin, index) => {
+            const photoHtml = pin.photo
+                ? `<img src="${pin.photo}" alt="${pin.label}" class="pin-thumb">`
+                : `<div class="pin-thumb-placeholder"><span class="material-symbols-outlined">image</span></div>`;
+
+            return `
+                <div class="pin-list-item" data-index="${index}">
+                    <span class="pin-list-number">${index + 1}</span>
+                    ${photoHtml}
+                    <div class="pin-list-info">
+                        <div class="pin-list-title">${pin.label || 'Untitled Place'}</div>
+                        <div class="pin-list-date">📅 ${pin.date || 'No date'}</div>
+                        <div class="pin-list-note truncate">${pin.note || 'No notes...'}</div>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         // Add click handlers
         list.querySelectorAll('.pin-list-item').forEach(item => {

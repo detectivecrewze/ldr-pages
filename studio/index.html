@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LDR Studio - Design Environment</title>
+    <link rel="stylesheet" href="css/editor.css">
+    <link rel="stylesheet" href="css/editor-ux.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <style>
+        @keyframes spin {
+            from {
+                transform: rotate(0deg)
+            }
+
+            to {
+                transform: rotate(360deg)
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="studio-app">
+        <!-- Top Toolbar -->
+        <header class="studio-header">
+            <div class="header-left">
+                <div class="studio-logo">
+                    <span class="material-symbols-outlined logo-icon">favorite</span>
+                    <span class="logo-text">LDR Studio</span>
+                </div>
+                <div class="project-info">
+                    <span class="project-name" id="projectNameDisplay">Long Distance Love</span>
+                    <div class="save-status">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Synced to Cloud</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Adaptive Contextual Toolbar -->
+            <div class="header-center" id="element-toolbar">
+                <div class="toolbar-group hidden" id="text-tools">
+                    <select class="tool-btn font-selector" id="fontSelector">
+                        <option>Inter</option>
+                        <option>Dancing Script</option>
+                        <option>Playfair Display</option>
+                    </select>
+                    <div class="divider"></div>
+                    <button class="tool-btn" data-tooltip="Text Size"><span
+                            class="material-symbols-outlined">format_size</span></button>
+                    <button class="tool-btn" data-tooltip="Text Color"><span
+                            class="material-symbols-outlined">palette</span></button>
+                    <div class="divider"></div>
+                    <button class="tool-btn" data-tooltip="Bold"><span
+                            class="material-symbols-outlined">format_bold</span></button>
+                </div>
+
+                <div class="toolbar-group hidden" id="image-tools">
+                    <button class="tool-btn" id="replaceImageBtn">
+                        <span class="material-symbols-outlined">image</span>
+                        <span>Replace URL</span>
+                    </button>
+                    <button class="tool-btn" id="uploadImageBtn">
+                        <span class="material-symbols-outlined">cloud_upload</span>
+                        <span>Upload</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button class="btn-secondary" onclick="StudioState.downloadDataJS()" data-tooltip="Download data.js">
+                    <span class="material-symbols-outlined">download</span>
+                    <span>Download</span>
+                </button>
+                <button class="btn-primary" id="publish-btn">
+                    <span class="material-symbols-outlined">rocket_launch</span>
+                    <span>Sync Online</span>
+                </button>
+                <div class="user-profile">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=LDR" alt="User">
+                </div>
+            </div>
+        </header>
+
+        <main class="studio-main">
+            <!-- Sidebar -->
+            <aside class="studio-sidebar">
+                <nav class="sidebar-tabs">
+                    <button class="tab-item active" data-tab="pages">
+                        <span class="material-symbols-outlined">auto_stories</span>
+                        <span>Pages</span>
+                        <span class="tab-indicator"></span>
+                    </button>
+                    <button class="tab-item" data-tab="uploads">
+                        <span class="material-symbols-outlined">cloud_upload</span>
+                        <span>Media</span>
+                        <span class="tab-indicator"></span>
+                    </button>
+                    <button class="tab-item" data-tab="music">
+                        <span class="material-symbols-outlined">music_note</span>
+                        <span>Music</span>
+                        <span class="tab-indicator"></span>
+                    </button>
+                    <button class="tab-item" data-tab="settings">
+                        <span class="material-symbols-outlined">settings</span>
+                        <span>Settings</span>
+                        <span class="tab-indicator"></span>
+                    </button>
+                </nav>
+
+                <div class="sidebar-content">
+                    <!-- Pages Tab -->
+                    <div class="tab-pane active" id="pane-pages">
+                        <h3>Story Chapters</h3>
+                        <div class="page-list" id="story-pages">
+                            <!-- Pages will be injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Media Tab -->
+                    <div class="tab-pane hidden" id="pane-uploads">
+                        <h3>Media Assets</h3>
+                        <div class="upload-area" id="sidebarUploadArea">
+                            <span class="material-symbols-outlined">upload</span>
+                            <p>Click to upload photos</p>
+                        </div>
+                        <div class="media-grid mt-6" id="sidebarMediaGrid">
+                            <!-- Uploaded media here -->
+                        </div>
+                    </div>
+
+                    <!-- Music Tab -->
+                    <div class="tab-pane hidden" id="pane-music">
+                        <h3>Soundtrack</h3>
+                        <div id="sidebarMusicList" class="space-y-3">
+                            <!-- Songs list here -->
+                        </div>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div class="tab-pane hidden" id="pane-settings">
+                        <h3>Studio Settings</h3>
+                        <div class="space-y-6">
+                            <div class="setting-item">
+                                <label
+                                    class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Project
+                                    Name</label>
+                                <input type="text" id="settingProjectName"
+                                    class="w-full px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 text-sm outline-none focus:border-rose-400 transition-all">
+                            </div>
+
+                            <div class="pt-6 border-t border-gray-100">
+                                <h4 class="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-3">Zona
+                                    Berbahaya</h4>
+                                <p class="text-[11px] text-gray-400 mb-4 leading-relaxed">Gunakan ini jika tampilan
+                                    error atau ingin kembali ke pengaturan awal data.js.</p>
+                                <button onclick="window.StudioState.resetToFactory()"
+                                    class="w-full px-4 py-3 bg-rose-50 text-rose-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-100 transition-all">
+                                    Reset ke Pengaturan Awal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Canvas Area -->
+            <section class="studio-canvas">
+                <div class="canvas-viewport">
+                    <div class="viewport-wrapper">
+                        <div class="device-bezel"></div>
+                        <div class="device-sensors"></div>
+                        <iframe id="preview-frame" src="../index.html?preview=studio" frameborder="0"></iframe>
+
+                        <!-- Selection Overlay (The Canva Magic) -->
+                        <div id="selection-overlay" class="selection-overlay hidden">
+                            <div class="handle nw"></div>
+                            <div class="handle ne"></div>
+                            <div class="handle sw"></div>
+                            <div class="handle se"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Action Buttons (Outside the phone box) -->
+                <div class="fab-group">
+                    <button id="password-add-btn" class="fab-btn hidden" title="Ganti Password">
+                        <span class="material-symbols-outlined">key</span>
+                        <span>Password</span>
+                    </button>
+                    <button id="dashboard-edit-btn" class="fab-btn hidden" title="Dashboard Settings">
+                        <span class="material-symbols-outlined">settings</span>
+                        <span>Settings</span>
+                    </button>
+                    <button id="map-add-btn" class="fab-btn hidden" title="Journey Highlights">
+                        <span class="material-symbols-outlined">add_location_alt</span>
+                        <span>Edit Map</span>
+                    </button>
+                    <button id="music-add-btn" class="fab-btn hidden" title="Soundtrack">
+                        <span class="material-symbols-outlined">library_music</span>
+                        <span>Playlist</span>
+                    </button>
+                    <button id="gallery-add-btn" class="fab-btn hidden" title="Memories">
+                        <span class="material-symbols-outlined">photo_library</span>
+                        <span>Gallery</span>
+                    </button>
+                    <button id="video-add-btn" class="fab-btn hidden" title="Video Vault">
+                        <span class="material-symbols-outlined">videocam</span>
+                        <span>Videos</span>
+                    </button>
+                    <button id="messenger-edit-btn" class="fab-btn hidden" title="Messenger Settings">
+                        <span class="material-symbols-outlined">chat</span>
+                        <span>Messenger</span>
+                    </button>
+                    <button id="bucket-add-btn" class="fab-btn hidden" title="Bucket List">
+                        <span class="material-symbols-outlined">checklist_rtl</span>
+                        <span>Bucket List</span>
+                    </button>
+                    <button id="quiz-add-btn" class="fab-btn hidden" title="Quiz Questions">
+                        <span class="material-symbols-outlined">quiz</span>
+                        <span>Edit Quiz</span>
+                    </button>
+                    <button id="letter-edit-btn" class="fab-btn hidden" title="Love Letter">
+                        <span class="material-symbols-outlined">edit_note</span>
+                        <span>Letter</span>
+                    </button>
+                </div>
+
+                <!-- Viewport Controls (Device Toggle & Zoom) -->
+                <div class="viewport-controls">
+                    <button class="control-btn active" id="btn-device-mobile" title="Mobile View">
+                        <span class="material-symbols-outlined">smartphone</span>
+                    </button>
+                    <button class="control-btn" id="btn-device-desktop" title="Desktop View">
+                        <span class="material-symbols-outlined">laptop</span>
+                    </button>
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" id="btn-zoom-out" title="Zoom Out">
+                            <span class="material-symbols-outlined">remove</span>
+                        </button>
+                        <span class="zoom-value">70%</span>
+                        <button class="zoom-btn" id="btn-zoom-in" title="Zoom In">
+                            <span class="material-symbols-outlined">add</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Hidden Input for Uploads -->
+    <input type="file" id="studio-file-input" class="hidden" accept="image/*">
+
+    <!-- Editor Modals (Valentine Style) -->
+
+    <!-- Music Manager Modal -->
+    <div id="musicPickerModal"
+        class="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-6xl h-[90vh] max-h-[850px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-scaleIn">
+            <div class="px-10 py-7 border-b border-gray-100 flex items-center justify-between bg-white relative z-20">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-rose-400 to-rose-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-rose-100 ring-4 ring-rose-50">
+                        <span class="material-symbols-outlined text-3xl">library_music</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-2xl tracking-tight">Soundtrack Cinta Kita</h3>
+                        <p class="text-sm text-gray-400 font-medium">Atur lagu-lagu romantis yang akan diputar di
+                            website kamu</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="music-save-btn"
+                        class="bg-green-500 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-100 flex items-center gap-2 active:scale-95">
+                        <span class="material-symbols-outlined text-lg">cloud_done</span> Simpan & Update
+                    </button>
+                    <button onclick="window.Editor.MusicEditor.close()"
+                        class="p-4 hover:bg-rose-50 rounded-2xl text-gray-400 hover:text-rose-600 transition-all active:scale-90 group">
+                        <span
+                            class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform">close</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 flex overflow-hidden bg-gray-50/30">
+                <div class="w-72 bg-white border-r border-gray-100 p-6 flex flex-col">
+                    <div id="modal-music-sidebar" class="flex-1"></div>
+                    <div class="mt-auto p-5 bg-blue-50/50 rounded-3xl border border-blue-100/50">
+                        <div class="flex items-center gap-2 text-blue-500 mb-2">
+                            <span class="material-symbols-outlined text-lg">lightbulb</span>
+                            <span class="text-[11px] font-black uppercase tracking-widest">Tips</span>
+                        </div>
+                        <p class="text-[11px] text-blue-600/80 leading-relaxed font-medium">Gunakan lagu yang familiar
+                            agar suasana makin romantis.</p>
+                    </div>
+                </div>
+                <div class="w-96 overflow-y-auto p-10 bg-white border-r border-gray-100">
+                    <div id="modal-music-list-header"></div>
+                    <div id="modal-music-active-list" class="space-y-4"></div>
+                </div>
+                <div class="flex-1 overflow-y-auto bg-gray-50/50 relative">
+                    <div id="music-editor-empty"
+                        class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+                        <div
+                            class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-xl shadow-gray-200/50">
+                            <span class="material-symbols-outlined text-gray-200 text-5xl">music_note</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">Pilih Lagu untuk Diedit</h4>
+                        <p class="text-gray-400 max-w-xs mx-auto text-sm leading-relaxed">Klik pada salah satu lagu di
+                            daftar samping untuk mulai mengubah detail.</p>
+                    </div>
+                    <div id="music-editor-panel" class="hidden h-full flex flex-col">
+                        <div class="flex-1 p-10">
+                            <div id="music-editor-form" class="max-w-xl mx-auto"></div>
+                        </div>
+                        <div
+                            class="p-8 bg-white/80 backdrop-blur-md border-t border-gray-100 flex items-center justify-center gap-4 sticky bottom-0 z-10">
+                            <button onclick="window.Editor.MusicEditor.confirmEdit()"
+                                class="bg-rose-500 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-rose-600 transition-all shadow-xl shadow-rose-200 flex items-center gap-3 active:scale-95">
+                                <span class="material-symbols-outlined text-xl">check_circle</span> Terapkan Perubahan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Manager Modal -->
+    <div id="galleryPickerModal"
+        class="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-6xl h-[90vh] max-h-[850px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-scaleIn">
+            <div class="px-10 py-7 border-b border-gray-100 flex items-center justify-between bg-white relative z-20">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-amber-100 ring-4 ring-orange-50">
+                        <span class="material-symbols-outlined text-3xl">photo_library</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-2xl tracking-tight">Galeri Memori</h3>
+                        <p class="text-sm text-gray-400 font-medium">Abadikan foto-foto indah perjalanan cinta kalian
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="gallery-save-btn"
+                        class="bg-green-500 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-100 flex items-center gap-2 active:scale-95">
+                        <span class="material-symbols-outlined text-lg">save</span> Simpan Galeri
+                    </button>
+                    <button onclick="window.Editor.GalleryEditor.close()"
+                        class="p-4 hover:bg-amber-50 rounded-2xl text-gray-400 hover:text-amber-600 transition-all active:scale-90 group">
+                        <span
+                            class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform">close</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 flex overflow-hidden bg-gray-50/30">
+                <div class="w-72 bg-white border-r border-gray-100 p-6 flex flex-col">
+                    <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Ide Caption</h4>
+                    <div id="modal-gallery-library" class="flex-1 overflow-y-auto space-y-3"></div>
+                </div>
+                <div class="w-96 overflow-y-auto p-10 bg-white border-r border-gray-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Foto Aktif</h4>
+                            <p class="text-[11px] text-gray-400 italic"><span id="modal-gallery-count">0</span> foto
+                                ditambahkan</p>
+                        </div>
+                        <button id="gallery-add-custom-btn"
+                            class="bg-amber-500 text-white px-4 py-2 rounded-full text-[10px] font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-100 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[14px]">add</span> Tambah Foto
+                        </button>
+                    </div>
+                    <div id="modal-gallery-active-list" class="space-y-4"></div>
+                </div>
+                <div class="flex-1 overflow-y-auto bg-gray-50/50 relative">
+                    <div id="gallery-editor-empty"
+                        class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+                        <div
+                            class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-xl shadow-gray-200/50">
+                            <span class="material-symbols-outlined text-gray-200 text-5xl">edit_square</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">Edit Detail Foto</h4>
+                        <p class="text-gray-400 max-w-xs mx-auto text-sm leading-relaxed">Klik pada salah satu foto
+                            untuk mulai mengubah caption dan pesan rahasia.</p>
+                    </div>
+                    <div id="gallery-editor-panel" class="hidden h-full flex flex-col">
+                        <div class="flex-1 p-10">
+                            <div id="gallery-editor-form" class="max-w-xl mx-auto"></div>
+                        </div>
+                        <div
+                            class="p-8 bg-white/80 backdrop-blur-md border-t border-gray-100 flex items-center justify-center sticky bottom-0 z-10">
+                            <button id="gallery-update-confirm-btn"
+                                class="bg-amber-500 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-amber-600 transition-all shadow-xl shadow-amber-200 flex items-center gap-3 active:scale-95">
+                                <span class="material-symbols-outlined text-xl">check_circle</span> Terapkan Perubahan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Journey Map Manager Modal -->
+    <div id="journeyManagerModal"
+        class="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-6xl h-[90vh] max-h-[850px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-scaleIn">
+            <div class="px-10 py-7 border-b border-gray-100 flex items-center justify-between bg-white relative z-20">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-amber-100 ring-4 ring-amber-50">
+                        <span class="material-symbols-outlined text-3xl">explore</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-2xl tracking-tight">Peta Perjalanan Kita</h3>
+                        <p class="text-sm text-gray-400 font-medium">Atur momen dan lokasi spesial dalam petualangan
+                            kalian
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="map-save-btn"
+                        class="bg-green-500 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-100 flex items-center gap-2 active:scale-95">
+                        <span class="material-symbols-outlined text-lg">save</span> Simpan Peta
+                    </button>
+                    <button onclick="window.Editor.JourneyEditor.close()"
+                        class="p-4 hover:bg-rose-50 rounded-2xl text-gray-400 hover:text-rose-600 transition-all active:scale-90 group">
+                        <span
+                            class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform">close</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 flex overflow-hidden bg-gray-50/30">
+                <div class="w-72 bg-white border-r border-gray-100 p-6 flex flex-col" id="modal-map-sidebar"></div>
+                <div class="w-96 overflow-y-auto p-10 bg-white border-r border-gray-100">
+                    <div id="modal-map-list-header"></div>
+                    <div id="modal-map-active-list" class="space-y-4"></div>
+                </div>
+                <div class="flex-1 overflow-y-auto bg-gray-50/50 relative">
+                    <div id="map-editor-empty"
+                        class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+                        <div
+                            class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-xl shadow-gray-200/50">
+                            <span class="material-symbols-outlined text-gray-200 text-5xl">location_on</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">Editor Lokasi</h4>
+                        <p class="text-gray-400 max-w-xs mx-auto text-sm leading-relaxed">Pilih item dari daftar untuk
+                            mengubah detail lokasi atau momen perjalanan.</p>
+                    </div>
+                    <div id="map-editor-panel" class="hidden h-full flex flex-col">
+                        <div class="flex-1 p-10">
+                            <div id="map-editor-form" class="max-w-xl mx-auto"></div>
+                        </div>
+                        <div
+                            class="p-8 bg-white/80 backdrop-blur-md border-t border-gray-100 flex items-center justify-center sticky bottom-0 z-10">
+                            <button id="map-update-confirm-btn"
+                                class="bg-amber-500 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-amber-600 transition-all shadow-xl shadow-amber-200 flex items-center gap-3 active:scale-95">
+                                <span class="material-symbols-outlined text-xl">check_circle</span> Update Item
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bucket List Manager Modal -->
+    <div id="bucketPickerModal"
+        class="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-6xl h-[90vh] max-h-[850px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-scaleIn">
+            <div class="px-10 py-7 border-b border-gray-100 flex items-center justify-between bg-white relative z-20">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-100 ring-4 ring-indigo-50">
+                        <span class="material-symbols-outlined text-3xl">playlist_add_check</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-2xl tracking-tight">Daftar Keinginan (Bucket List)</h3>
+                        <p class="text-sm text-gray-400 font-medium">Bikin rencana seru yang mau kalian wujudin bareng!
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="bucket-save-btn"
+                        class="bg-green-500 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-100 flex items-center gap-2 active:scale-95">
+                        <span class="material-symbols-outlined text-lg">save</span> Simpan Daftar
+                    </button>
+                    <button onclick="window.Editor.BucketEditor.close()"
+                        class="p-4 hover:bg-rose-50 rounded-2xl text-gray-400 hover:text-rose-600 transition-all active:scale-90 group">
+                        <span
+                            class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform">close</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 flex overflow-hidden bg-gray-50/30">
+                <div class="w-72 bg-white border-r border-gray-100 p-6 flex flex-col" id="modal-bucket-sidebar"></div>
+                <div class="w-96 overflow-y-auto p-10 bg-white border-r border-gray-100">
+                    <div id="modal-bucket-list-header"></div>
+                    <div id="modal-bucket-active-list" class="space-y-4"></div>
+                </div>
+                <div class="flex-1 overflow-y-auto bg-gray-50/50 relative">
+                    <div id="bucket-editor-empty"
+                        class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+                        <div
+                            class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-xl shadow-gray-200/50">
+                            <span class="material-symbols-outlined text-gray-200 text-5xl">edit_square</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">Editor Item</h4>
+                        <p class="text-gray-400 max-w-xs mx-auto text-sm leading-relaxed">Pilih item dari daftar untuk
+                            mengatur status dan detail keinginan kalian.</p>
+                    </div>
+                    <div id="bucket-editor-panel" class="hidden h-full flex flex-col">
+                        <div class="flex-1 p-10">
+                            <div id="bucket-editor-form" class="max-w-xl mx-auto"></div>
+                        </div>
+                        <div
+                            class="p-8 bg-white/80 backdrop-blur-md border-t border-gray-100 flex items-center justify-center sticky bottom-0 z-10">
+                            <button id="bucket-update-confirm-btn"
+                                class="bg-indigo-500 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-indigo-600 transition-all shadow-xl shadow-indigo-200 flex items-center gap-3 active:scale-95">
+                                <span class="material-symbols-outlined text-xl">check_circle</span> Update Item
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Vault Manager Modal -->
+    <div id="videoPickerModal"
+        class="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-6xl h-[90vh] max-h-[850px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-scaleIn">
+            <div class="px-10 py-7 border-b border-gray-100 flex items-center justify-between bg-white relative z-20">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-slate-700 to-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-slate-100 ring-4 ring-slate-50">
+                        <span class="material-symbols-outlined text-3xl">videocam</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-2xl tracking-tight">Brankas Video (Vault)</h3>
+                        <p class="text-sm text-gray-400 font-medium">Simpan video-video kenangan kalian di sini</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="video-save-btn"
+                        class="bg-green-500 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-100 flex items-center gap-2 active:scale-95">
+                        <span class="material-symbols-outlined text-lg">save</span> Simpan Vault
+                    </button>
+                    <button onclick="window.Editor.VideoEditor.close()"
+                        class="p-4 hover:bg-rose-50 rounded-2xl text-gray-400 hover:text-rose-600 transition-all active:scale-90 group">
+                        <span
+                            class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform">close</span>
+                    </button>
+                </div>
+            </div>
+            <div id="video-editor-container" class="flex-1 overflow-y-auto p-10 bg-gray-50/30">
+                <!-- Video editor content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Messenger Manager Modal -->
+    <div id="messengerPickerModal"
+        class="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-5xl h-[85vh] max-h-[750px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-scaleIn">
+            <div class="px-10 py-7 border-b border-gray-100 flex items-center justify-between bg-white relative z-20">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-sky-400 to-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-sky-100 ring-4 ring-sky-50">
+                        <span class="material-symbols-outlined text-3xl">chat</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-2xl tracking-tight">Pengaturan Chat (Messenger)</h3>
+                        <p class="text-sm text-gray-400 font-medium">Atur nama dan riwayat chat romantis kalian</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="messenger-save-btn"
+                        class="bg-green-500 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-100 flex items-center gap-2 active:scale-95">
+                        <span class="material-symbols-outlined text-lg">save</span> Simpan
+                    </button>
+                    <button onclick="window.Editor.MessengerEditor.close()"
+                        class="p-4 hover:bg-rose-50 rounded-2xl text-gray-400 hover:text-rose-600 transition-all active:scale-90 group">
+                        <span
+                            class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform">close</span>
+                    </button>
+                </div>
+            </div>
+            <div id="messenger-editor-container" class="flex-1 overflow-y-auto p-10 bg-gray-50/30">
+                <!-- Messenger settings form will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Love Letter (The Promise) Manager Modal -->
+    <div id="letterPickerModal"
+        class="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-4xl h-[85vh] max-h-[800px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-scaleIn">
+            <div class="px-10 py-7 border-b border-gray-100 flex items-center justify-between bg-white relative z-20">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-rose-100 ring-4 ring-rose-50">
+                        <span class="material-symbols-outlined text-3xl">edit_note</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-2xl tracking-tight">Surat Cinta Kita</h3>
+                        <p class="text-sm text-gray-400 font-medium">Tuliskan janji dan pesan terdalammu</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="letter-save-btn"
+                        class="bg-rose-500 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-600 transition-all shadow-lg shadow-rose-100 flex items-center gap-2 active:scale-95">
+                        <span class="material-symbols-outlined text-lg">save</span> Simpan Surat
+                    </button>
+                    <button onclick="window.Editor.LetterEditor.close()"
+                        class="p-4 hover:bg-rose-50 rounded-2xl text-gray-400 hover:text-rose-600 transition-all active:scale-90 group">
+                        <span
+                            class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform">close</span>
+                    </button>
+                </div>
+            </div>
+            <div id="letter-editor-container" class="flex-1 overflow-y-auto p-10 bg-gray-50/30">
+                <!-- Letter settings form will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Settings Manager Modal -->
+    <div id="dashboardPickerModal"
+        class="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-4xl h-[80vh] max-h-[700px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-scaleIn">
+            <div class="px-10 py-7 border-b border-gray-100 flex items-center justify-between bg-white relative z-20">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-slate-400 to-slate-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-slate-100 ring-4 ring-slate-50">
+                        <span class="material-symbols-outlined text-3xl">settings_heart</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-2xl tracking-tight">Pengaturan Halaman Utama</h3>
+                        <p class="text-sm text-gray-400 font-medium">Atur lokasi, statistik, dan mood kalian</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="dashboard-save-btn"
+                        class="bg-green-500 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-100 flex items-center gap-2 active:scale-95">
+                        <span class="material-symbols-outlined text-lg">save</span> Simpan
+                    </button>
+                    <button onclick="window.Editor.DashboardEditor.close()"
+                        class="p-4 hover:bg-rose-50 rounded-2xl text-gray-400 hover:text-rose-600 transition-all active:scale-90 group">
+                        <span
+                            class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform">close</span>
+                    </button>
+                </div>
+            </div>
+            <div id="dashboard-editor-container" class="flex-1 overflow-y-auto p-10 bg-gray-50/30">
+                <!-- Dashboard settings form will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Manager Modal -->
+    <div id="quizPickerModal"
+        class="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-6xl h-[90vh] max-h-[850px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-scaleIn">
+            <div class="px-10 py-7 border-b border-gray-100 flex items-center justify-between bg-white relative z-20">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-rose-400 to-rose-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-rose-100 ring-4 ring-rose-50">
+                        <span class="material-symbols-outlined text-3xl">quiz</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-2xl tracking-tight">Kuis Seberapa Kenal Kamu</h3>
+                        <p class="text-sm text-gray-400 font-medium">Uji pengetahuan pasanganmu tentang kalian berdua
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="quiz-save-btn"
+                        class="bg-green-500 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-100 flex items-center gap-2 active:scale-95">
+                        <span class="material-symbols-outlined text-lg">save</span> Simpan Kuis
+                    </button>
+                    <button onclick="window.Editor.QuizEditor.close()"
+                        class="p-4 hover:bg-rose-50 rounded-2xl text-gray-400 hover:text-rose-600 transition-all active:scale-90 group">
+                        <span
+                            class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform">close</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 flex overflow-hidden bg-gray-50/30">
+                <div class="w-72 bg-white border-r border-gray-100 p-6 flex flex-col">
+                    <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Bank Pertanyaan</h4>
+                    <div id="modal-quiz-library" class="flex-1 overflow-y-auto space-y-3"></div>
+                </div>
+                <div class="w-96 overflow-y-auto p-10 bg-white border-r border-gray-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pertanyaan Kuis
+                            </h4>
+                            <p class="text-[11px] text-gray-400 italic"><span id="modal-quiz-count">0</span> soal aktif
+                            </p>
+                        </div>
+                        <button id="quiz-add-custom-btn"
+                            class="bg-rose-500 text-white px-4 py-2 rounded-full text-[10px] font-bold hover:bg-rose-600 transition-all shadow-lg shadow-rose-100 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[14px]">add</span> Tambah Soal
+                        </button>
+                    </div>
+                    <div id="modal-quiz-active-list" class="space-y-4"></div>
+                </div>
+                <div class="flex-1 overflow-y-auto bg-gray-50/50 relative">
+                    <div id="quiz-editor-empty"
+                        class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
+                        <div
+                            class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-xl shadow-gray-200/50">
+                            <span class="material-symbols-outlined text-gray-200 text-5xl">edit_note</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-2">Editor Soal</h4>
+                        <p class="text-gray-400 max-w-xs mx-auto text-sm leading-relaxed">Pilih soal dari daftar untuk
+                            mengatur pertanyaan, jawaban benar, dan pesan feed-back.</p>
+                    </div>
+                    <div id="quiz-editor-panel" class="hidden h-full flex flex-col">
+                        <div class="flex-1 p-10">
+                            <div id="question-editor-form" class="max-w-xl mx-auto"></div>
+                        </div>
+                        <div
+                            class="p-8 bg-white/80 backdrop-blur-md border-t border-gray-100 flex items-center justify-center sticky bottom-0 z-10">
+                            <button id="question-update-confirm-btn"
+                                class="bg-rose-500 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-rose-600 transition-all shadow-xl shadow-rose-200 flex items-center gap-3 active:scale-95">
+                                <span class="material-symbols-outlined text-xl">check_circle</span> Update Soal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login & Password Editor Modal -->
+    <div id="passwordPickerModal"
+        class="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-scaleIn flex flex-col max-h-[90vh]">
+            <!-- Header -->
+            <div class="px-10 py-7 border-b border-gray-100 flex items-center justify-between bg-white relative z-20">
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-14 h-14 bg-rose-100 text-rose-500 rounded-2xl flex items-center justify-center text-3xl">
+                        <span class="material-symbols-outlined">lock_open</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-xl tracking-tight">Login & Pengaturan Awal</h3>
+                        <p class="text-xs text-gray-400 font-medium">Atur password, panggilan, dan kuotasi favorit</p>
+                    </div>
+                </div>
+                <button onclick="window.Editor.PasswordEditor.close()"
+                    class="p-4 hover:bg-rose-50 rounded-2xl text-gray-400 hover:text-rose-600 transition-all active:scale-90">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="flex-1 overflow-y-auto p-10 bg-gray-50/30 space-y-8">
+                <!-- Personalization -->
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black text-rose-400 uppercase tracking-widest ml-1">Label
+                            "Kamu"</label>
+                        <input type="text" id="login-you-label"
+                            class="w-full px-5 py-4 bg-white border border-gray-100 rounded-2xl font-bold text-gray-700 outline-none focus:border-rose-200 shadow-sm"
+                            placeholder="ex: Me">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black text-rose-400 uppercase tracking-widest ml-1">Label
+                            "Dia"</label>
+                        <input type="text" id="login-them-label"
+                            class="w-full px-5 py-4 bg-white border border-gray-100 rounded-2xl font-bold text-gray-700 outline-none focus:border-rose-200 shadow-sm"
+                            placeholder="ex: My Love">
+                    </div>
+                </div>
+
+                <!-- Romantic Context -->
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black text-rose-400 uppercase tracking-widest ml-1">Kuotasi
+                            Selamat Datang</label>
+                        <input type="text" id="login-quote"
+                            class="w-full px-5 py-4 bg-white border border-gray-100 rounded-2xl font-medium text-gray-700 outline-none focus:border-rose-200 shadow-sm"
+                            placeholder="e.g. Distance means so little...">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black text-rose-400 uppercase tracking-widest ml-1">Tanggal
+                            Jadian (Anniversary)</label>
+                        <input type="date" id="login-start-date"
+                            class="w-full px-5 py-4 bg-white border border-gray-100 rounded-2xl font-bold text-gray-700 outline-none focus:border-rose-200 shadow-sm">
+                        <p class="text-[9px] text-gray-400 mt-1 ml-1 px-1">Digunakan untuk menghitung "Connected for X
+                            days".</p>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="bg-rose-50/50 p-8 rounded-[2.5rem] border border-rose-100/50 space-y-6">
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black text-rose-500 uppercase tracking-widest ml-1">Secret
+                            Password</label>
+                        <input type="text" id="login-password"
+                            class="w-full px-6 py-5 bg-white border-2 border-transparent rounded-[1.5rem] text-center text-xl font-black text-rose-600 outline-none focus:border-rose-300 shadow-lg shadow-rose-100/50"
+                            placeholder="e.g. forever">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black text-rose-500 uppercase tracking-widest ml-1">Pesan
+                            Error (Jika Salah)</label>
+                        <input type="text" id="login-error-msg"
+                            class="w-full px-5 py-4 bg-white border border-rose-50 rounded-2xl text-[13px] font-bold text-rose-400 outline-none focus:border-rose-200">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-8 border-t border-gray-100 flex items-center justify-center bg-white">
+                <button id="password-save-btn" onclick="window.Editor.PasswordEditor.save()"
+                    class="w-full max-w-xs py-4 rounded-2xl bg-rose-600 text-white font-black text-sm uppercase tracking-[0.2em] hover:bg-rose-700 transition-all shadow-xl shadow-rose-200 flex items-center justify-center gap-3 active:scale-95">
+                    <span class="material-symbols-outlined">verified_user</span> Simpan Pengaturan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Picker Modal (Valentine Style - Premium) -->
+    <div id="mapPickerModal"
+        class="fixed inset-0 z-[5000] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-4xl h-[85vh] max-h-[750px] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col animate-scaleIn">
+            <!-- Header -->
+            <div class="px-10 py-6 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 shadow-sm">
+                        <span class="material-symbols-outlined text-2xl">location_on</span>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-gray-900 text-lg uppercase tracking-tight">Pilih Lokasi</h3>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Cari tempat atau tempel
+                            link Google Maps</p>
+                    </div>
+                </div>
+                <button onclick="window.mapPicker.close()"
+                    class="p-3 hover:bg-gray-100 rounded-2xl transition-all text-gray-400 hover:text-gray-600">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Search Area with Tabs -->
+            <div class="p-8 bg-gray-50/50 border-b border-gray-100 shrink-0">
+                <nav class="flex items-center gap-2 p-1.5 bg-gray-100 rounded-2xl mb-6 max-w-md mx-auto">
+                    <button id="tabSearch" onclick="window.mapPicker.switchTab('search')"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-white text-blue-600 shadow-sm border border-gray-100">
+                        Cari Tempat
+                    </button>
+                    <button id="tabPasteLink" onclick="window.mapPicker.switchTab('paste')"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-gray-400 hover:text-gray-600">
+                        Tempel Link
+                    </button>
+                </nav>
+
+                <!-- Search Tab Content -->
+                <div id="searchTabContent" class="relative max-w-xl mx-auto">
+                    <span
+                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                    <input type="text" id="mapSearchInput"
+                        class="w-full pl-12 pr-28 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-blue-100 focus:border-blue-300 outline-none transition-all shadow-sm"
+                        placeholder="Ketik nama kota atau tempat..." autocomplete="off">
+                    <button onclick="window.mapPicker.search(true)"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">
+                        Cari
+                    </button>
+                    <div id="mapSearchResults"
+                        class="absolute z-[100] left-0 right-0 top-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-2xl hidden overflow-hidden max-h-64 overflow-y-auto">
+                        <!-- Results injected here -->
+                    </div>
+                </div>
+
+                <!-- Paste Tab Content -->
+                <div id="pasteTabContent" class="relative max-w-xl mx-auto hidden">
+                    <span
+                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">link</span>
+                    <input type="text" id="gmapsLinkInput"
+                        class="w-full pl-12 pr-4 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-emerald-100 focus:border-emerald-300 outline-none transition-all shadow-sm"
+                        placeholder="Pindahkan link dari browser ke sini..."
+                        oninput="window.mapPicker.handleGoogleMapsLink(this.value)">
+
+                    <div class="mt-4 bg-white/80 border border-gray-100 rounded-2xl p-4">
+                        <details class="group">
+                            <summary
+                                class="flex items-center gap-2 cursor-pointer text-[10px] font-black text-blue-500 uppercase tracking-widest select-none">
+                                <span
+                                    class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">help</span>
+                                Panduan Cara Copy Link
+                            </summary>
+                            <div
+                                class="mt-3 text-[11px] text-gray-500 leading-relaxed space-y-2 border-t border-gray-50 pt-3">
+                                <p><strong class="text-gray-700">📱 Mobile:</strong> Cari lokasi di app Google Maps >
+                                    Klik Share > Copy Link.</p>
+                                <p><strong class="text-gray-700">💻 Desktop:</strong> Cari lokasi > Copy URL langsung
+                                    dari Address Bar browser.</p>
+                                <p class="text-[9px] text-amber-500 font-bold bg-amber-50 p-2 rounded-lg">PENTING:
+                                    Gunakan link penuh browser untuk hasil terbaik.</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Area -->
+            <div class="flex-1 relative bg-gray-50">
+                <div id="leafletPickerContainer" class="absolute inset-0 z-10 transition-opacity duration-300"></div>
+
+                <!-- Selection Indicator Overlay -->
+                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 w-full max-w-md px-4">
+                    <div
+                        class="bg-white/90 backdrop-blur-md p-5 rounded-[2rem] shadow-2xl border border-white/40 flex items-center justify-between gap-4">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Lokasi
+                                Terpilih</p>
+                            <p id="selectedLocationText" class="text-xs font-bold text-gray-900 truncate italic">Klik
+                                pada peta untuk memilih...</p>
+                        </div>
+                        <button onclick="window.mapPicker.confirm()" id="confirmLocationBtn" disabled
+                            class="whitespace-nowrap bg-slate-900 text-white px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl disabled:opacity-30 disabled:cursor-not-allowed active:scale-95">
+                            Konfirmasi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification"
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[3000] px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-2xl flex items-center gap-3 opacity-0 pointer-events-none transition-all duration-300">
+        <span class="material-symbols-outlined text-emerald-500" id="notificationIcon">check_circle</span>
+        <span class="text-sm font-bold text-slate-800" id="notificationText">Saved!</span>
+    </div>
+
+    <!-- Password Gate Modal -->
+    <div id="password-gate" class="fixed inset-0 z-[10000] bg-[#fff1f2] flex items-center justify-center p-4 hidden">
+        <div
+            class="max-w-md w-full bg-white/80 backdrop-blur-xl p-10 rounded-[3rem] shadow-2xl border border-white/40 text-center">
+            <div class="w-20 h-20 bg-rose-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <span class="material-symbols-outlined text-rose-500 text-4xl">lock</span>
+            </div>
+            <h2 class="text-2xl font-black text-gray-900 mb-2">Editor Terkunci</h2>
+            <p class="text-sm text-gray-500 mb-8 leading-relaxed">Masukkan password rahasia untuk mengakses editor
+                project ini.</p>
+
+            <div class="relative mb-6">
+                <span
+                    class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-rose-300">key</span>
+                <input type="password" id="gate-password-input"
+                    class="w-full pl-14 pr-4 py-5 bg-white rounded-2xl border-2 border-transparent focus:border-rose-400 outline-none transition-all text-lg font-bold placeholder:text-gray-300 tracking-widest text-center"
+                    placeholder="••••••••">
+            </div>
+
+            <button onclick="checkGatePassword()"
+                class="w-full bg-rose-500 text-white py-5 rounded-2xl font-bold text-lg shadow-xl shadow-rose-200 hover:bg-rose-600 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+                <span class="material-symbols-outlined">unlock</span>
+                <span>Buka Editor</span>
+            </button>
+            <p id="gate-error" class="text-xs text-red-500 mt-4 font-bold opacity-0 transition-opacity">Password salah!
+                Silakan coba lagi.</p>
+        </div>
+    </div>
+
+    <!-- Core Studio Logic -->
+    <script src="../data.js?v=5"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/studio-state.js?v=5"></script>
+    <script src="js/map-picker.js?v=5"></script>
+    <script src="js/editors/music-editor.js?v=5"></script>
+    <script src="js/editors/gallery-editor.js?v=5"></script>
+    <script src="js/editors/quiz-editor.js?v=5"></script>
+    <script src="js/editors/password-editor.js?v=5"></script>
+    <script src="js/editors/journey-editor.js?v=5"></script>
+    <script src="js/editors/bucket-editor.js?v=5"></script>
+    <script src="js/editors/video-editor.js?v=5"></script>
+    <script src="js/editors/messenger-editor.js?v=5"></script>
+    <script src="js/editors/letter-editor.js?v=5"></script>
+    <script src="js/editors/dashboard-editor.js?v=5"></script>
+    <script src="js/studio-ux.js?v=5"></script>
+    <script src="js/studio.js?v=5"></script>
+    <script>
+        function checkGatePassword() {
+            const input = document.getElementById('gate-password-input');
+            const error = document.getElementById('gate-error');
+            const gate = document.getElementById('password-gate');
+            const password = input.value.trim();
+
+            // Get correct password from state safely
+            const correctPassword = StudioState.config?.login?.password;
+
+            if (correctPassword && password === correctPassword) {
+                gate.classList.add('hidden');
+                sessionStorage.setItem('studio_unlocked_' + StudioState.projectId, 'true');
+                if (window.showNotification) showNotification('Welcome back! Editor unlocked. ✨');
+            } else {
+                error.classList.remove('opacity-0');
+                input.classList.add('border-red-500');
+                setTimeout(() => input.classList.remove('border-red-500'), 1000);
+            }
+        }
+    </script>
+</body>
+
+</html>

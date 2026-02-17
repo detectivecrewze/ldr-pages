@@ -162,7 +162,7 @@ function playSong(index) {
 
     // Update Cover (Jewel Case Style)
     if (song.cover) {
-        elements.cdFrontCover.style.backgroundImage = `url(${song.cover})`;
+        elements.cdFrontCover.style.backgroundImage = `url("${song.cover}")`;
         elements.cdFrontCover.classList.add('visible');
         elements.cdCase.classList.add('has-cover');
         elements.cdLabel.classList.add('hidden');

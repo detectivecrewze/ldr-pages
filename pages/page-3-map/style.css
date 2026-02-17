@@ -520,10 +520,27 @@ body {
     height: 50px;
     object-fit: cover;
     border: 1px solid var(--border-shadow);
+    background: var(--win-white);
+}
+
+.pin-thumb-placeholder {
+    width: 50px;
+    height: 50px;
+    background: var(--win-gray);
+    border: 1px solid var(--border-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--win-gray-dark);
+}
+
+.hidden {
+    display: none !important;
 }
 
 .pin-list-info {
     flex: 1;
+    min-width: 0;
 }
 
 .pin-list-title {

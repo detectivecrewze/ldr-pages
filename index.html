@@ -327,6 +327,22 @@
             margin: 0 4px;
         }
 
+        #taskbarWindows {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            height: 100%;
+            overflow-x: auto;
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        #taskbarWindows::-webkit-scrollbar {
+            display: none;
+            /* Chrome/Safari */
+        }
+
         .taskbar-window {
             display: flex;
             align-items: center;
@@ -557,7 +573,7 @@
         </div>
     </div>
 
-    <script src="data.js?v=3"></script>
+    <script src="data.js?v=5"></script>
     <script>
         // Desktop Application Manager
         // Global Audio Player for persistent music
@@ -1279,6 +1295,29 @@
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('Desktop initializing...');
             try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const projectId = urlParams.get('id') || urlParams.get('to');
+
+                if (projectId) {
+                    console.log('Loading cloud configuration for:', projectId);
+                    try {
+                        const API_URL = 'https://valentine-upload.aldoramadhan16.workers.dev';
+                        const res = await fetch(`${API_URL}/get-config?id=${projectId}`);
+                        if (res.ok) {
+                            const cloudConfig = await res.json();
+                            // Merge cloud config into factory CONFIG
+                            if (window.CONFIG && typeof deepMerge !== 'undefined') {
+                                window.CONFIG = deepMerge(window.CONFIG, cloudConfig);
+                            } else {
+                                window.CONFIG = Object.assign(window.CONFIG || {}, cloudConfig);
+                            }
+                            console.log('Cloud configuration merged');
+                        }
+                    } catch (e) {
+                        console.warn('Cloud load failed, using local defaults:', e);
+                    }
+                }
+
                 await desktop.init();
                 console.log('Desktop initialized successfully');
 
@@ -1290,6 +1329,26 @@
                 console.error('Desktop init error:', err);
             }
         });
+
+        // Helper for merging (if not already defined)
+        function deepMerge(target, source) {
+            if (!source) return target;
+            const output = Array.isArray(target) ? [...target] : { ...target };
+            if (source && typeof source === 'object') {
+                Object.keys(source).forEach(key => {
+                    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                        if (!(key in target) || !target[key] || typeof target[key] !== 'object') {
+                            output[key] = source[key];
+                        } else {
+                            output[key] = deepMerge(target[key], source[key]);
+                        }
+                    } else {
+                        output[key] = source[key];
+                    }
+                });
+            }
+            return output;
+        }
     </script>
 </body>
 

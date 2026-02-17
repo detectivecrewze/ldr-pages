@@ -1,436 +1,346 @@
-/**
- * Windows Media Player Classic - Video Vault
- * Authentic WMP 6.4 style video player
- */
+// Video Vault - Retro Media Player Script
 
-// State
-let state = {
-    videos: [],
-    currentIndex: -1,
-    isPlaying: false,
-    isPaused: false
-};
+const VideoPlayer = {
+    state: {
+        videos: [],
+        currentIndex: 0,
+        isPlaying: false,
+        volume: 0.7,
+        isMuted: false,
+        duration: 0,
+        currentTime: 0
+    },
 
-// DOM Elements
-const elements = {
-    videoPlayer: document.getElementById('videoPlayer'),
-    videoPlaceholder: document.getElementById('videoPlaceholder'),
-    videoOverlay: document.getElementById('videoOverlay'),
-    nowPlayingText: document.getElementById('nowPlayingText'),
+    elements: {},
 
-    // Controls
-    playBtn: document.getElementById('playBtn'),
-    pauseBtn: document.getElementById('pauseBtn'),
-    stopBtn: document.getElementById('stopBtn'),
-    prevBtn: document.getElementById('prevBtn'),
-    nextBtn: document.getElementById('nextBtn'),
+    init() {
+        console.log('[Video] Initializing player...');
+        this.cacheElements();
+        this.loadData();
+        this.setupEventListeners();
+        this.renderPlaylist();
+        this.playVideo(0, false); // Load first video without autoplay
+    },
 
-    // Progress
-    seekbarFill: document.getElementById('seekbarFill'),
-    seekbarThumb: document.getElementById('seekbarThumb'),
-    currentTime: document.getElementById('currentTime'),
-    totalTime: document.getElementById('totalTime'),
+    cacheElements() {
+        const doc = document;
+        this.elements = {
+            video: doc.getElementById('videoPlayer'),
+            videoPlaceholder: doc.getElementById('videoPlaceholder'),
+            playBtn: doc.getElementById('playBtn'),
+            pauseBtn: doc.getElementById('pauseBtn'),
+            stopBtn: doc.getElementById('stopBtn'),
+            prevBtn: doc.getElementById('prevBtn'),
+            nextBtn: doc.getElementById('nextBtn'),
+            muteBtn: doc.querySelector('.ctrl-btn-small[title="Mute"]'),
+            volumeFill: doc.querySelector('.volume-fill'),
+            seekbarFill: id('seekbarFill'),
+            seekbarThumb: id('seekbarThumb'),
+            seekbarTrack: id('seekbarTrack'),
+            currentTime: id('currentTime'),
+            totalTime: id('totalTime'),
+            infoLine1: id('infoTitle'),
+            infoLine2: id('infoDetails'),
+            playlistContainer: id('playlistContainer'),
+            playlistCount: id('playlistCount'),
+            statusText: id('statusText'),
+            backButton: id('backBtn'),
+            continueButton: id('continueBtn')
+        };
+    },
 
-    // Playlist
-    playlistContainer: document.getElementById('playlistContainer'),
-    playlistCount: document.getElementById('playlistCount'),
-
-    // Info
-    infoTitle: document.getElementById('infoTitle'),
-    infoDetails: document.getElementById('infoDetails'),
-    statusText: document.getElementById('statusText'),
-    videoDimensions: document.getElementById('videoDimensions'),
-
-    // Navigation
-    backBtn: document.getElementById('backBtn'),
-    nextBtnNav: document.getElementById('continueBtn')
-};
-
-// Initialize
-function init() {
-    loadData();
-    renderPlaylist();
-    setupEventListeners();
-}
-
-// Load data from CONFIG
-function loadData() {
-    // Default video data (placeholder - in real use would be actual video URLs)
-    state.videos = [
-        {
-            id: 1,
-            title: "Our First Date Vlog",
-            duration: "3:45",
-            description: "That magical day at the cafe",
-            thumbnail: "🎬",
-            url: "" // Add actual video URL
-        },
-        {
-            id: 2,
-            title: "Video Call Funny Moments",
-            duration: "5:22",
-            description: "Compilation of our best laughs",
-            thumbnail: "📹",
-            url: ""
-        },
-        {
-            id: 3,
-            title: "Birthday Surprise Message",
-            duration: "2:15",
-            description: "Your special day celebration",
-            thumbnail: "🎂",
-            url: ""
-        },
-        {
-            id: 4,
-            title: "Beach Trip Memories",
-            duration: "4:30",
-            description: "Sunset at Bali",
-            thumbnail: "🏖️",
-            url: ""
-        },
-        {
-            id: 5,
-            title: "Good Morning Calls",
-            duration: "1:50",
-            description: "Waking up together (virtually)",
-            thumbnail: "☀️",
-            url: ""
-        }
-    ];
-
-    // Try to load from CONFIG
-    if (typeof CONFIG !== 'undefined' && CONFIG.videos) {
-        state.videos = CONFIG.videos;
-    }
-
-    elements.playlistCount.textContent = `(${state.videos.length})`;
-
-    // Automatically detect real durations in the background
-    autoDetectDurations();
-}
-
-/**
- * Automatically fetches metadata for all videos to get their real durations
- */
-async function autoDetectDurations() {
-    console.log('[Video] Starting background duration detection...');
-
-    for (let i = 0; i < state.videos.length; i++) {
-        const video = state.videos[i];
-        if (!video.url) continue;
-
-        try {
-            const tempVideo = document.createElement('video');
-            tempVideo.preload = 'metadata';
-            tempVideo.src = video.url;
-            tempVideo.crossOrigin = 'anonymous';
-
-            // Create a promise that resolves when metadata is loaded
-            const duration = await new Promise((resolve, reject) => {
-                tempVideo.onloadedmetadata = () => resolve(tempVideo.duration);
-                tempVideo.onerror = () => reject('Error loading metadata');
-                // Timeout after 5 seconds to prevent hanging
-                setTimeout(() => resolve(null), 5000);
-            });
-
-            if (duration && !isNaN(duration) && duration !== Infinity) {
-                const mins = Math.floor(duration / 60);
-                const secs = Math.floor(duration % 60);
-                const actualDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
-
-                console.log(`[Video] Auto-detected duration for "${video.title}": ${actualDuration}`);
-                state.videos[i].duration = actualDuration;
-                // Only update if current is 0:01
-                if (state.videos[i].duration === '0:01' || state.videos[i].duration === '0:00') {
-                    // Update main UI if this is current video
-                    if (i === state.currentIndex) {
-                        elements.totalTime.textContent = actualDuration;
-                        elements.infoDetails.textContent = `${video.description} • ${actualDuration}`;
-                    }
-                }
-                renderPlaylist(); // Update the UI
+    loadData() {
+        const { state, elements } = this;
+        // Default video data
+        state.videos = [
+            {
+                id: 1,
+                title: "Our First Date Vlog",
+                duration: "3:45",
+                description: "That magical day at the cafe",
+                thumbnail: "🎬",
+                url: ""
+            },
+            {
+                id: 2,
+                title: "Video Call Funny Moments",
+                duration: "5:22",
+                description: "Compilation of our best laughs",
+                thumbnail: "📹",
+                url: ""
+            },
+            {
+                id: 3,
+                title: "Birthday Surprise Message",
+                duration: "2:15",
+                description: "Your special day celebration",
+                thumbnail: "🎂",
+                url: ""
             }
-        } catch (err) {
-            console.warn(`[Video] Failed to detect duration for ${video.title} (CORS?):`, err);
-            // Fallback: Try without crossorigin (might work depending on browser/cache)
-            // But usually this is blocked for privacy. We rely on the timeupdate fallback then.
+        ];
+
+        // Try to load from CONFIG
+        if (typeof CONFIG !== 'undefined' && CONFIG.videos && CONFIG.videos.length > 0) {
+            // Filter out invalid/empty entries
+            const filtered = CONFIG.videos.filter(v => v.title || v.url);
+            if (filtered.length > 0) state.videos = filtered;
         }
-    }
-}
 
-// Render playlist
-function renderPlaylist() {
-    if (state.videos.length === 0) {
-        elements.playlistContainer.innerHTML = '<div class="playlist-item">No videos</div>';
-        return;
-    }
+        elements.playlistCount.textContent = `(${state.videos.length})`;
 
-    elements.playlistContainer.innerHTML = state.videos.map((video, index) => `
-        <div class="playlist-item ${index === state.currentIndex ? 'active' : ''} ${index === state.currentIndex && state.isPlaying ? 'playing' : ''}" 
-             data-index="${index}">
-            <span class="pl-indicator">${index === state.currentIndex && state.isPlaying ? '▶' : video.thumbnail || '📹'}</span>
-            <div class="pl-info">
-                <div class="pl-title">${video.title}</div>
-                <div class="pl-duration">${video.duration}</div>
-            </div>
-        </div>
-    `).join('');
-
-    // Add click handlers
-    elements.playlistContainer.querySelectorAll('.playlist-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const index = parseInt(item.dataset.index);
-            playVideo(index);
-        });
-    });
-}
-
-// Play video
-function playVideo(index) {
-    if (index < 0 || index >= state.videos.length) return;
-
-    state.currentIndex = index;
-    state.isPlaying = true;
-    state.isPaused = false;
-
-    const video = state.videos[index];
-
-    // Update UI
-    elements.videoPlaceholder.style.display = 'none';
-    elements.videoPlayer.style.display = 'block';
-    elements.videoOverlay.style.display = 'block';
-
-    // Update info display
-    elements.infoTitle.textContent = video.title;
-    elements.infoDetails.textContent = `${video.description} • ${video.duration}`;
-    elements.nowPlayingText.textContent = `Now Playing: ${video.title}`;
-    elements.statusText.textContent = 'Playing';
-    elements.totalTime.textContent = video.duration;
-
-    // Real implementation: Set video source and play
-    if (video.url) {
-        elements.videoPlayer.src = video.url;
-        elements.videoPlayer.load();
-        elements.videoPlayer.play().catch(e => {
-            console.warn('Playback error or blocked:', e);
-            state.isPlaying = false;
-            updatePlayPauseButtons();
-        });
-    }
-
-    updatePlayPauseButtons();
-    renderPlaylist();
-
-    // Notify parent to mute background music
-    if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'VIDEO_EVENT', action: 'playing' }, '*');
-    }
-}
-
-// Pause video
-function pauseVideo() {
-    state.isPaused = true;
-    state.isPlaying = false;
-    elements.statusText.textContent = 'Paused';
-    elements.videoPlayer.pause();
-    updatePlayPauseButtons();
-    renderPlaylist();
-
-    // Notify parent to resume background music
-    if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'VIDEO_EVENT', action: 'stopped' }, '*');
-    }
-}
-
-// Resume video
-function resumeVideo() {
-    if (state.currentIndex === -1) {
-        playVideo(0);
-        return;
-    }
-
-    state.isPaused = false;
-    state.isPlaying = true;
-    elements.statusText.textContent = 'Playing';
-    elements.videoPlayer.play();
-    updatePlayPauseButtons();
-    renderPlaylist();
-
-    // Notify parent to mute background music
-    if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'VIDEO_EVENT', action: 'playing' }, '*');
-    }
-}
-
-// Stop video
-function stopVideo() {
-    state.isPlaying = false;
-    state.isPaused = false;
-
-    elements.videoPlayer.pause();
-    elements.videoPlayer.currentTime = 0;
-
-    elements.videoPlaceholder.style.display = 'flex';
-    elements.videoPlayer.style.display = 'none';
-    elements.videoOverlay.style.display = 'none';
-    elements.infoTitle.textContent = 'No video selected';
-    elements.infoDetails.textContent = '--';
-    elements.statusText.textContent = 'Stopped';
-    elements.currentTime.textContent = '0:00';
-    elements.seekbarFill.style.width = '0%';
-    elements.seekbarThumb.style.left = '0%';
-
-    updatePlayPauseButtons();
-    renderPlaylist();
-
-    // Notify parent to resume background music
-    if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'VIDEO_EVENT', action: 'stopped' }, '*');
-    }
-}
-
-// Play previous
-function playPrevious() {
-    if (state.videos.length === 0) return;
-
-    let prevIndex = state.currentIndex - 1;
-    if (prevIndex < 0) {
-        prevIndex = state.videos.length - 1;
-    }
-    playVideo(prevIndex);
-}
-
-// Play next
-function playNext() {
-    if (state.videos.length === 0) return;
-
-    let nextIndex = state.currentIndex + 1;
-    if (nextIndex >= state.videos.length) {
-        // End of playlist - stop video so background music returns
-        stopVideo();
-        return;
-    }
-    playVideo(nextIndex);
-}
-
-// Update play/pause button visibility
-function updatePlayPauseButtons() {
-    if (state.isPlaying) {
-        elements.playBtn.style.display = 'none';
-        elements.pauseBtn.style.display = 'flex';
-    } else {
-        elements.playBtn.style.display = 'flex';
-        elements.pauseBtn.style.display = 'none';
-    }
-}
-
-// Setup event listeners
-function setupEventListeners() {
-    // Play/Pause/Stop
-    elements.playBtn.addEventListener('click', resumeVideo);
-    elements.pauseBtn.addEventListener('click', pauseVideo);
-    elements.stopBtn.addEventListener('click', stopVideo);
-    elements.prevBtn.addEventListener('click', playPrevious);
-    elements.nextBtn.addEventListener('click', playNext);
-
-    // Navigation
-    elements.backBtn.addEventListener('click', () => {
-        window.parent.postMessage({ type: 'NAVIGATE', direction: 'back' }, '*');
-    });
-
-    elements.nextBtnNav.addEventListener('click', () => {
-        window.parent.postMessage({ type: 'APP_COMPLETE' }, '*');
-    });
-
-    elements.videoPlayer.addEventListener('loadedmetadata', () => {
-        const duration = elements.videoPlayer.duration;
-        if (!duration || isNaN(duration) || duration === Infinity) return;
-
-        const mins = Math.floor(duration / 60);
-        const secs = Math.floor(duration % 60);
-        const actualDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
-
-        console.log('[Video] Metadata loaded. Actual duration:', actualDuration);
-
-        if (state.currentIndex !== -1) {
-            // Update the duration in our state
-            state.videos[state.currentIndex].duration = actualDuration;
-
-            // Update the UI elements
-            elements.totalTime.textContent = actualDuration;
-            elements.infoDetails.textContent = `${state.videos[state.currentIndex].description} • ${actualDuration}`;
-
-            // Re-render playlist to show correct duration in the list
-            renderPlaylist();
-        }
-    });
-
-    // Update video dimensions if needed
-    if (elements.videoDimensions) {
-        elements.videoDimensions.textContent = `${elements.videoPlayer.videoWidth}x${elements.videoPlayer.videoHeight}`;
-    }
-
-    // Event to catch when the browser realizes the video is longer than initially thought
-    elements.videoPlayer.addEventListener('durationchange', () => {
-        updateDurationFromPlayer();
-    });
-
-    elements.videoPlayer.addEventListener('timeupdate', () => {
-        // Continuous check: if the player knows a better duration than what we're showing, update it!
-        updateDurationFromPlayer();
-
-        const percent = (elements.videoPlayer.currentTime / elements.videoPlayer.duration) * 100;
-        elements.seekbarFill.style.width = `${percent}%`;
-        elements.seekbarThumb.style.left = `${percent}%`;
-
-        const mins = Math.floor(elements.videoPlayer.currentTime / 60);
-        const secs = Math.floor(elements.videoPlayer.currentTime % 60);
-        elements.currentTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    });
+        // Background duration detection
+        this.autoDetectDurations();
+    },
 
     /**
-     * Helper to grab the real duration from the player and update the UI/State
+     * Automatically fetches metadata for all videos to get their real durations
      */
-    function updateDurationFromPlayer() {
-        const duration = elements.videoPlayer.duration;
-        if (state.currentIndex !== -1 && duration && !isNaN(duration) && duration !== Infinity && duration > 1) {
-            const mins = Math.floor(duration / 60);
-            const secs = Math.floor(duration % 60);
-            const actualDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
+    async autoDetectDurations() {
+        const { state } = this;
+        console.log('[Video] Starting background duration detection...');
 
-            // If the text is different (e.g., current is 0:05 and actual is 0:45)
-            if (elements.totalTime.textContent !== actualDuration) {
-                console.log(`[Video] Updating duration: ${elements.totalTime.textContent} -> ${actualDuration}`);
-                state.videos[state.currentIndex].duration = actualDuration;
-                elements.totalTime.textContent = actualDuration;
-                elements.infoDetails.textContent = `${state.videos[state.currentIndex].description} • ${actualDuration}`;
-                renderPlaylist();
+        for (let i = 0; i < state.videos.length; i++) {
+            const video = state.videos[i];
+            if (!video.url) continue;
+
+            try {
+                const tempVideo = document.createElement('video');
+                tempVideo.preload = 'metadata';
+                tempVideo.src = video.url;
+                tempVideo.crossOrigin = 'anonymous';
+
+                const duration = await new Promise((resolve) => {
+                    tempVideo.onloadedmetadata = () => resolve(tempVideo.duration);
+                    tempVideo.onerror = () => resolve(null);
+                    setTimeout(() => resolve(null), 5000);
+                });
+
+                if (duration && !isNaN(duration) && duration !== Infinity) {
+                    const mins = Math.floor(duration / 60);
+                    const secs = Math.floor(duration % 60);
+                    const actualDuration = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+                    state.videos[i].duration = actualDuration;
+
+                    // Update main UI if this is current video
+                    if (i === state.currentIndex) {
+                        this.elements.totalTime.textContent = actualDuration;
+                    }
+
+                    this.renderPlaylist();
+                }
+            } catch (err) {
+                console.warn(`[Video] Failed to detect duration for ${video.title}:`, err);
             }
         }
+    },
+
+    setupEventListeners() {
+        const { elements, state } = this;
+
+        // Playback controls
+        elements.playBtn.addEventListener('click', () => this.togglePlay(true));
+        elements.pauseBtn.addEventListener('click', () => this.togglePlay(false));
+        elements.stopBtn.addEventListener('click', () => this.stopVideo());
+        elements.prevBtn.addEventListener('click', () => this.playPrevious());
+        elements.nextBtn.addEventListener('click', () => this.playNext());
+
+        // Volume
+        elements.muteBtn.addEventListener('click', () => this.toggleMute());
+
+        // Video Events
+        elements.video.addEventListener('timeupdate', () => this.updateProgress());
+        elements.video.addEventListener('ended', () => this.playNext());
+        elements.video.addEventListener('loadedmetadata', () => {
+            state.duration = elements.video.duration;
+            const mins = Math.floor(state.duration / 60);
+            const secs = Math.floor(state.duration % 60);
+            elements.totalTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        });
+
+        // Seek
+        elements.seekbarTrack.addEventListener('click', (e) => {
+            const rect = elements.seekbarTrack.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            elements.video.currentTime = pos * elements.video.duration;
+        });
+
+        // Navigation
+        elements.backButton.addEventListener('click', () => {
+            window.parent.postMessage({ type: 'NAVIGATE', direction: 'close' }, '*');
+        });
+        elements.continueButton.addEventListener('click', () => {
+            window.parent.postMessage({ type: 'APP_COMPLETE', appId: 'video', nextApp: 'letter' }, '*');
+        });
+    },
+
+    renderPlaylist() {
+        const { state, elements } = this;
+        if (!elements.playlistContainer) return;
+
+        elements.playlistContainer.innerHTML = state.videos.map((video, index) => `
+            <div class="playlist-item ${index === state.currentIndex ? 'active' : ''} ${index === state.currentIndex && state.isPlaying ? 'playing' : ''}" 
+                 data-index="${index}">
+                <span class="pl-indicator">${index === state.currentIndex && state.isPlaying ? '▶' : '📹'}</span>
+                <div class="pl-info">
+                    <div class="pl-title">${video.title || 'Untitled'}</div>
+                    <div class="pl-duration">Click to play</div>
+                </div>
+            </div>
+        `).join('');
+
+        // Add click handlers
+        elements.playlistContainer.querySelectorAll('.playlist-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const index = parseInt(item.dataset.index);
+                this.playVideo(index);
+            });
+        });
+    },
+
+    playVideo(index, autoplay = true) {
+        const { state, elements } = this;
+        const video = state.videos[index];
+        if (!video) return;
+
+        state.currentIndex = index;
+
+        // Update selection UI
+        this.renderPlaylist();
+
+        // Update Info Display
+        elements.infoLine1.textContent = video.title || 'Now Playing';
+        elements.infoDetails.textContent = `${video.description || 'Our Memory'} • ${video.duration || '--:--'}`;
+        elements.statusText.textContent = 'Opening...';
+
+        if (video.url) {
+            elements.videoPlaceholder.style.display = 'none';
+            elements.video.style.display = 'block';
+
+            // Set source and load
+            elements.video.src = video.url;
+            elements.video.load();
+
+            elements.video.onerror = (e) => {
+                console.error('[Video] Error loading:', video.url, e);
+                elements.statusText.textContent = 'Playback error';
+            };
+
+            if (autoplay) {
+                elements.video.play().then(() => {
+                    state.isPlaying = true;
+                    this.updatePlayPauseUI();
+                    elements.statusText.textContent = 'Playing';
+                }).catch(e => {
+                    console.log('Playback failed:', e);
+                    state.isPlaying = false;
+                    this.updatePlayPauseUI();
+                    elements.statusText.textContent = 'Ready';
+                });
+            } else {
+                state.isPlaying = false;
+                this.updatePlayPauseUI();
+                elements.statusText.textContent = 'Ready';
+            }
+        } else {
+            elements.video.src = '';
+            elements.video.style.display = 'none';
+            elements.videoPlaceholder.style.display = 'flex';
+            elements.statusText.textContent = 'No media found';
+            state.isPlaying = false;
+            this.updatePlayPauseUI();
+        }
+    },
+
+    togglePlay(play) {
+        const { state, elements } = this;
+        if (!elements.video.src && play) return;
+
+        if (play) {
+            elements.video.play();
+            state.isPlaying = true;
+            elements.statusText.textContent = 'Playing';
+        } else {
+            elements.video.pause();
+            state.isPlaying = false;
+            elements.statusText.textContent = 'Paused';
+        }
+        this.updatePlayPauseUI();
+        this.renderPlaylist();
+    },
+
+    stopVideo() {
+        const { state, elements } = this;
+        elements.video.pause();
+        elements.video.currentTime = 0;
+        state.isPlaying = false;
+        elements.statusText.textContent = 'Stopped';
+        this.updatePlayPauseUI();
+        this.renderPlaylist();
+    },
+
+    updatePlayPauseUI() {
+        const { state, elements } = this;
+        elements.playBtn.style.display = state.isPlaying ? 'none' : 'flex';
+        elements.pauseBtn.style.display = state.isPlaying ? 'flex' : 'none';
+
+        // Add inactive state style to controls if no video src
+        const hasSrc = elements.video.src && elements.video.src !== window.location.href;
+        elements.playBtn.style.opacity = hasSrc ? '1' : '0.5';
+    },
+
+    playNext() {
+        const nextIndex = (this.state.currentIndex + 1) % this.state.videos.length;
+        this.playVideo(nextIndex);
+    },
+
+    playPrevious() {
+        const prevIndex = (this.state.currentIndex - 1 + this.state.videos.length) % this.state.videos.length;
+        this.playVideo(prevIndex);
+    },
+
+    toggleMute() {
+        const { state, elements } = this;
+        state.isMuted = !state.isMuted;
+        elements.video.muted = state.isMuted;
+        elements.muteBtn.textContent = state.isMuted ? '🔇' : '🔊';
+    },
+
+    updateProgress() {
+        const { elements, state } = this;
+        const curr = elements.video.currentTime;
+        const dur = elements.video.duration;
+
+        if (isNaN(dur)) return;
+
+        const pos = (curr / dur) * 100;
+        elements.seekbarFill.style.width = pos + '%';
+        elements.seekbarThumb.style.left = pos + '%';
+
+        // Update time display
+        const cMins = Math.floor(curr / 60);
+        const cSecs = Math.floor(curr % 60);
+        elements.currentTime.textContent = `${cMins}:${cSecs.toString().padStart(2, '0')}`;
     }
+};
 
-    elements.videoPlayer.addEventListener('ended', () => {
-        playNext();
-    });
-}
+// Global helper for ID selection
+function id(str) { return document.getElementById(str); }
 
-// Listen for CONFIG_UPDATE
+// Initialize when ready
+document.addEventListener('DOMContentLoaded', () => {
+    VideoPlayer.init();
+});
+
+// Update from Parent (Admin Console)
 window.addEventListener('message', (e) => {
-    if (e.data && e.data.type === 'CONFIG_UPDATE' && e.data.config) {
-        if (e.data.config.videos) {
-            state.videos = e.data.config.videos;
-            elements.playlistCount.textContent = `(${state.videos.length})`;
-            stopVideo();
-            state.currentIndex = -1;
-            renderPlaylist();
+    if (e.data?.type === 'CONFIG_UPDATE') {
+        window.CONFIG = e.data.config;
+        VideoPlayer.loadData();
+        VideoPlayer.renderPlaylist();
+        // If current index is out of bounds after update
+        if (VideoPlayer.state.currentIndex >= VideoPlayer.state.videos.length) {
+            VideoPlayer.playVideo(0, false);
         }
     }
 });
-
-// Start
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}

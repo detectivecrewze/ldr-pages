@@ -75,7 +75,7 @@ const elements = {
 };
 
 // Quotes array
-const quotes = [
+let currentQuotes = [
     "Distance means so little when someone means so much",
     "Together forever, never apart. Maybe in distance, but never in heart",
     "The pain of parting is nothing to the joy of meeting again",
@@ -141,6 +141,11 @@ function loadData() {
                 state.theirLocation.personName = config.login.themLabel;
             }
         }
+
+        // Dashboard Quotes
+        if (config.dashboard && config.dashboard.quotes && config.dashboard.quotes.length > 0) {
+            currentQuotes = config.dashboard.quotes;
+        }
     }
 
     // Calculate distance
@@ -174,6 +179,14 @@ function loadData() {
     updateProfiles();
     updateStats();
     updateReunionDisplay();
+
+    // Trigger immediate quote update if visible
+    if (elements.quoteBox && currentQuotes.length > 0) {
+        // Try to keep current index or reset if out of bounds
+        const currentIdx = Math.max(0, currentQuotes.indexOf(elements.quoteBox.textContent.replace(/"/g, '')));
+        const actualIdx = currentIdx >= currentQuotes.length ? 0 : currentIdx;
+        elements.quoteBox.textContent = `"${currentQuotes[actualIdx]}"`;
+    }
 }
 
 // Calculate distance between two coordinates (Haversine formula)
@@ -441,8 +454,9 @@ function updateCountdown() {
 function rotateQuotes() {
     let index = 0;
     setInterval(() => {
-        index = (index + 1) % quotes.length;
-        elements.quoteBox.textContent = `"${quotes[index]}"`;
+        if (currentQuotes.length === 0) return;
+        index = (index + 1) % currentQuotes.length;
+        elements.quoteBox.textContent = `"${currentQuotes[index]}"`;
     }, 30000);
 }
 

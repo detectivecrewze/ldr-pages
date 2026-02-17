@@ -113,8 +113,8 @@ const CONFIG = {
             {
                 "title": "Always With Me",
                 "artist": "Spirited Away",
-                "url": "https://valentine-upload.aldoramadhan16.workers.dev/1770742306865-md6tqo.mp3",
-                "cover": "https://valentine-upload.aldoramadhan16.workers.dev/1770745026847-9q9koe.jpg"
+                "url": "https://www.dropbox.com/scl/fi/3uzwqdycyb6952lq3gui6/Always-With-Me-Spirited-Away.mp3?rlkey=anrzxikooe5b3zntghe6wtihk&st=k9rqjwz8&raw=1",
+                "cover": "../../assets/image/Always With Me - Spirited Away.jpg"
             },
             {
                 "title": "Selfless",
@@ -125,8 +125,44 @@ const CONFIG = {
             {
                 "title": "Ivy",
                 "artist": "Frank Ocean",
-                "url": "",
-                "cover": "https://valentine-upload.aldoramadhan16.workers.dev/1770750405167-n6i96v.jpeg"
+                "url": "https://www.dropbox.com/scl/fi/dpigzk2rhhvr4lfsxti47/Frank-Ocean-Ivy.mp3?rlkey=9opgczft19mbg6weviwg12wdz&st=fjxnt7ei&raw=1",
+                "cover": "../../assets/image/Frank Ocean - Ivy.jpg"
+            },
+            {
+                "title": "My Love Mine All Mine",
+                "artist": "Mitski",
+                "url": "https://www.dropbox.com/scl/fi/71ib9m69dm2ed9squj191/Mitski-My-Love-Mine-All-Mine.mp3?rlkey=i43d8ng7tbndbuflm1yw3j3r9&st=t9tsegbh&raw=1",
+                "cover": "../../assets/image/Mitski - My Love Mine All Mine.jpg"
+            },
+            {
+                "title": "High Hopes",
+                "artist": "Kodaline",
+                "url": "https://www.dropbox.com/scl/fi/6h4i5ezb00to62f1x54px/Kodaline-High-Hopes.mp3?rlkey=7m8dt1g8ynuensacwqjmbj2mr&st=jckky1u2&raw=1",
+                "cover": "../../assets/image/Kodaline High Hopes.jpg"
+            },
+            {
+                "title": "everything u are",
+                "artist": "Hindia",
+                "url": "https://www.dropbox.com/scl/fi/eta02fedtrjp04q1ax0u4/Hindia-everything-u-are.mp3?rlkey=jvuvoeud3tveq87bluqdgobd1&st=zq91rzye&raw=1",
+                "cover": "../../assets/image/Hindia - Everything u Are.jpg"
+            },
+            {
+                "title": "Sailor Song",
+                "artist": "Gigi Perez",
+                "url": "https://www.dropbox.com/scl/fi/cwucmfzv2pli58t3mg5im/Gigi-Perez-Sailor-Song.mp3?rlkey=y18ihrykfxt8b0pjc204xwnoc&st=s0r0nnc1&raw=1",
+                "cover": "../../assets/image/Gigi Perez - Sailor Song.jpg"
+            },
+            {
+                "title": "Can't Help Falling In Love with You",
+                "artist": "Elvis Presley",
+                "url": "https://www.dropbox.com/scl/fi/qvpmw73ob28mrhb4mq81e/Elvis-Prasley-Can-t-Help-Falling-In-Love-with-You.mp3?rlkey=jycw1l6ktfrcelvlnjlqm2mpm&st=o532plwo&raw=1",
+                "cover": "../../assets/image/Elvis Presley - Can't Help Falling In Love With You.jpg"
+            },
+            {
+                "title": "Who Knows",
+                "artist": "Daniel Caesar",
+                "url": "https://www.dropbox.com/scl/fi/nqpvliyw9r780t3wk4636/Daniel-Caesar-Who-Knows.mp3?rlkey=vnfwwhsmuwdyt2lrgwuhjyf9u&st=92fhl86e&raw=1",
+                "cover": "../../assets/image/Daniel Caesar - Who Knows.jpg"
             }
         ],
         "dateIdeas": [
